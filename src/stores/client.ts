@@ -8,7 +8,9 @@ export const useClientStore = defineStore('client', () => {
     const loading = ref(false)
     const error = ref<string | null>(null)
 
-    const fetchClients = async () => {
+    const fetchClients = async (force = false) => {
+        if (!force && clients.value.length > 0) return
+
         loading.value = true
         error.value = null
         try {
@@ -20,6 +22,7 @@ export const useClientStore = defineStore('client', () => {
             if (err) throw err
             clients.value = data || []
         } catch (err: any) {
+            console.error('Error fetching clients:', err)
             error.value = err.message
             clients.value = []
         } finally {
@@ -34,11 +37,13 @@ export const useClientStore = defineStore('client', () => {
         try {
             const { data: userData } = await supabase.auth.getUser()
 
+            if (!userData.user) throw new Error('Utilisateur non authentifié')
+
             const { data, error: err } = await supabase
                 .from('clients')
                 .insert({
                     ...clientData,
-                    user_id: userData.user?.id
+                    user_id: userData.user.id
                 })
                 .select()
                 .single()
@@ -47,15 +52,16 @@ export const useClientStore = defineStore('client', () => {
 
             if (data) {
                 clients.value.unshift(data)
-                return { data }
+                return { data, error: null }
             }
         } catch (err: any) {
+            console.error('Error creating client:', err)
             error.value = err.message
-            return { error: err }
+            return { data: null, error: err }
         } finally {
             loading.value = false
         }
-        return { error: 'Unknown error' }
+        return { data: null, error: new Error('Unknown error') }
     }
 
     const updateClient = async (id: string, updates: Partial<Client>) => {
@@ -72,12 +78,13 @@ export const useClientStore = defineStore('client', () => {
             if (index !== -1) {
                 clients.value[index] = { ...clients.value[index], ...updates } as Client
             }
+            return { error: null }
         } catch (err: any) {
+            console.error('Error updating client:', err)
             return { error: err }
         } finally {
             loading.value = false
         }
-        return { error: null }
     }
 
     const deleteClient = async (id: string) => {
@@ -91,12 +98,13 @@ export const useClientStore = defineStore('client', () => {
             if (err) throw err
 
             clients.value = clients.value.filter(c => c.id !== id)
+            return { error: null }
         } catch (err: any) {
+            console.error('Error deleting client:', err)
             return { error: err }
         } finally {
             loading.value = false
         }
-        return { error: null }
     }
 
     return { clients, loading, error, fetchClients, createClient, updateClient, deleteClient }

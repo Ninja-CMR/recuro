@@ -22,6 +22,15 @@ const {
   setValues
 } = useClientValidation()
 
+const notification = ref<{ type: 'success' | 'error', message: string } | null>(null)
+
+const setNotification = (type: 'success' | 'error', message: string) => {
+  notification.value = { type, message }
+  setTimeout(() => {
+    notification.value = null
+  }, 5000)
+}
+
 onMounted(() => {
   clientStore.fetchClients()
 })
@@ -43,8 +52,9 @@ const startEdit = (client: any) => {
 }
 
 const onFormSubmit = handleSubmit(async (values) => {
-  const action = editingClientId.value 
-    ? clientStore.updateClient(editingClientId.value, values)
+  const isEditing = !!editingClientId.value
+  const action = isEditing
+    ? clientStore.updateClient(editingClientId.value!, values)
     : clientStore.createClient(values)
     
   const { error } = await action
@@ -53,12 +63,20 @@ const onFormSubmit = handleSubmit(async (values) => {
     showCreateForm.value = false
     resetForm()
     editingClientId.value = null
+    setNotification('success', `Client ${isEditing ? 'mis à jour' : 'créé'} avec succès !`)
+  } else {
+    setNotification('error', `Erreur: ${error.message || 'Une erreur est survenue'}`)
   }
 })
 
 const handleDelete = async (id: string) => {
     if (confirm('Voulez-vous vraiment supprimer ce client ?')) {
-        await clientStore.deleteClient(id)
+        const { error } = await clientStore.deleteClient(id)
+        if (!error) {
+          setNotification('success', 'Client supprimé avec succès')
+        } else {
+          setNotification('error', `Erreur lors de la suppression: ${error.message}`)
+        }
     }
 }
 </script>
@@ -71,6 +89,14 @@ const handleDelete = async (id: string) => {
         <Plus class="w-4 h-4 mr-2" />
         Nouveau Client
       </Button>
+    </div>
+
+    <!-- Notifications -->
+    <div v-if="notification" :class="[
+      'p-4 rounded-md mb-6 animate-in fade-in slide-in-from-top-2 duration-300',
+      notification.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
+    ]">
+      {{ notification.message }}
     </div>
 
     <!-- Create/Edit Client Form -->

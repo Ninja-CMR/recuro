@@ -8,7 +8,9 @@ export const useInvoiceStore = defineStore('invoice', () => {
     const loading = ref(false)
     const error = ref<string | null>(null)
 
-    const fetchInvoices = async () => {
+    const fetchInvoices = async (force = false) => {
+        if (!force && invoices.value.length > 0) return
+
         loading.value = true
         error.value = null
         try {
@@ -20,6 +22,7 @@ export const useInvoiceStore = defineStore('invoice', () => {
             if (err) throw err
             invoices.value = data || []
         } catch (err: any) {
+            console.error('Error fetching invoices:', err)
             error.value = err.message
             invoices.value = []
         } finally {
@@ -34,12 +37,14 @@ export const useInvoiceStore = defineStore('invoice', () => {
         try {
             const { data: userData } = await supabase.auth.getUser()
 
+            if (!userData.user) throw new Error('Utilisateur non authentifié')
+
             // 1. Create Invoice
             const { data: invoice, error: invoiceErr } = await supabase
                 .from('invoices')
                 .insert({
                     ...invoiceData,
-                    user_id: userData.user?.id
+                    user_id: userData.user.id
                 })
                 .select()
                 .single()
@@ -49,18 +54,20 @@ export const useInvoiceStore = defineStore('invoice', () => {
             if (invoice) {
                 // 2. Create Items
                 const itemsWithId = items.map(item => ({ ...item, invoice_id: invoice.id }))
-                await supabase.from('invoice_items').insert(itemsWithId)
+                const { error: itemsErr } = await supabase.from('invoice_items').insert(itemsWithId)
+                if (itemsErr) throw itemsErr
 
                 invoices.value.unshift(invoice)
-                return { data: invoice }
+                return { data: invoice, error: null }
             }
         } catch (err: any) {
+            console.error('Error creating invoice:', err)
             error.value = err.message
-            return { error: err }
+            return { data: null, error: err }
         } finally {
             loading.value = false
         }
-        return { error: 'Unknown error' }
+        return { data: null, error: new Error('Unknown error') }
     }
 
     const pendingCount = computed(() => invoices.value.filter(i => i.status === 'sent' || i.status === 'draft').length)
