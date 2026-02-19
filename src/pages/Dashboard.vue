@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useInvoiceStore } from '@/stores/invoice'
 import { useClientStore } from '@/stores/client'
+import { useSubscriptionStore } from '@/stores/subscription'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Badge from '@/components/ui/Badge.vue'
@@ -20,6 +21,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 const invoiceStore = useInvoiceStore()
 const clientStore = useClientStore()
+const subscriptionStore = useSubscriptionStore()
 
 const period = ref('this-month')
 
@@ -27,17 +29,13 @@ onMounted(async () => {
     // Ensure data is loaded
     await Promise.all([
         invoiceStore.fetchInvoices(),
-        clientStore.fetchClients()
+        clientStore.fetchClients(),
+        subscriptionStore.fetchSubscriptions()
     ])
-    
-    // Simulate user Name if missing from auth (for demo)
-    if (!authStore.user?.user_metadata?.full_name) {
-        // mock for display if needed
-    }
 })
 
 const userName = computed(() => {
-    return authStore.user?.user_metadata?.full_name || 'Olivier' // Using "Olivier" as requested in prompt example if unknown
+    return authStore.userProfile?.full_name || 'Utilisateur'
 })
 
 const formatCurrency = (value: number) => {
@@ -62,9 +60,9 @@ const getStatusVariant = (status: string) => {
   }
 }
 
-// Subscription limits - new users start with 0 active subscriptions
-const activeSubs = ref(0)
-const maxSubs = ref(3) // Freemium plan limit
+// Subscription limits
+const activeSubs = computed(() => subscriptionStore.subscriptions.length)
+const maxSubs = computed(() => authStore.userProfile?.subscription_tier === 'premium' ? 999999 : 3)
 
 </script>
 
@@ -180,7 +178,12 @@ const maxSubs = ref(3) // Freemium plan limit
                                     </Badge>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <Button variant="ghost" size="sm" class="h-8 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        class="h-8 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                        @click="router.push(`/invoices/${invoice.id}`)"
+                                    >
                                         Voir
                                     </Button>
                                 </td>
@@ -198,20 +201,22 @@ const maxSubs = ref(3) // Freemium plan limit
             <Card class="p-5">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold text-sm">Abonnements actifs</h3>
-                    <Badge variant="secondary" class="font-normal">Freemium</Badge>
+                    <Badge variant="secondary" class="font-normal capitalize">{{ authStore.userProfile?.subscription_tier }}</Badge>
                 </div>
                 
                 <div class="mb-2">
                     <span class="text-2xl font-bold">{{ activeSubs }}</span>
-                    <span class="text-muted-foreground text-sm"> / {{ maxSubs }}</span>
+                    <span v-if="authStore.userProfile?.subscription_tier === 'freemium'" class="text-muted-foreground text-sm"> / {{ maxSubs }}</span>
                 </div>
                 
-                <div class="w-full bg-secondary h-2 rounded-full overflow-hidden mb-2">
-                    <div class="bg-primary h-full rounded-full" :style="{ width: (activeSubs / maxSubs) * 100 + '%' }"></div>
+                <div v-if="authStore.userProfile?.subscription_tier === 'freemium'" class="w-full bg-secondary h-2 rounded-full overflow-hidden mb-2">
+                    <div class="bg-primary h-full rounded-full transition-all duration-500" :style="{ width: (activeSubs / maxSubs) * 100 + '%' }"></div>
                 </div>
                 
                 <p class="text-xs text-muted-foreground">
-                    Vous avez utilisé {{ activeSubs }} de vos {{ maxSubs }} abonnements gratuits.
+                    {{ authStore.userProfile?.subscription_tier === 'freemium' 
+                       ? `Vous avez utilisé ${activeSubs} de vos ${maxSubs} abonnements gratuits.`
+                       : `Vous profitez d'abonnements illimités avec votre plan Premium.` }}
                 </p>
             </Card>
 

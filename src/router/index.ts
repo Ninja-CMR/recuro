@@ -54,10 +54,34 @@ const router = createRouter({
                     component: () => import('@/pages/invoices/InvoiceBuilder.vue')
                 },
                 {
+                    path: 'invoices/:id', // Detail view
+                    name: 'invoice-detail',
+                    meta: { requiresAuth: true },
+                    component: () => import('@/pages/invoices/InvoiceDetail.vue')
+                },
+                {
+                    path: 'invoices/:id/edit', // Edit view
+                    name: 'edit-invoice',
+                    meta: { requiresAuth: true },
+                    component: () => import('@/pages/invoices/InvoiceBuilder.vue')
+                },
+                {
                     path: 'subscriptions',
                     name: 'subscriptions',
                     meta: { requiresAuth: true },
                     component: () => import('@/pages/subscriptions/SubscriptionList.vue')
+                },
+                {
+                    path: 'subscriptions/new', // New route for creating subscriptions
+                    name: 'new-subscription',
+                    meta: { requiresAuth: true },
+                    component: () => import('@/pages/subscriptions/SubscriptionBuilder.vue')
+                },
+                {
+                    path: 'subscriptions/:id/edit',
+                    name: 'edit-subscription',
+                    meta: { requiresAuth: true },
+                    component: () => import('@/pages/subscriptions/SubscriptionBuilder.vue')
                 },
                 {
                     path: 'settings',
@@ -79,6 +103,8 @@ router.beforeEach(async (to, _from, next) => {
     if (to.meta.requiresAuth && !authStore.user) {
         next({ name: 'login' })
     } else if ((to.name === 'login' || to.name === 'register') && authStore.user) {
+        next({ name: 'dashboard' })
+    } else if (to.path === '/' && authStore.user) {
         next({ name: 'dashboard' })
     } else {
         next()

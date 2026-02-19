@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router' // Import useRoute
 import { useClientStore } from '@/stores/client'
 import { useInvoiceStore } from '@/stores/invoice'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Card from '@/components/ui/Card.vue'
-import { Trash2, Plus } from 'lucide-vue-next'
-
+import { Trash2, Plus, FileDown } from 'lucide-vue-next' // Add FileDown icon
+import { generatePdf } from '@/services/pdfService' // Import generatePdf
 
 import { useInvoiceValidation } from '@/composables/useInvoiceValidation'
 
 const router = useRouter()
+const route = useRoute()
 const clientStore = useClientStore()
 const invoiceStore = useInvoiceStore()
 const saving = ref(false)
+const currentInvoice = ref<any>(null) // To store the fetched invoice data for PDF generation
+
+const invoiceId = computed(() => route.params.id as string | undefined)
+const isEditMode = computed(() => !!invoiceId.value)
 
 const {
   errors,
@@ -25,11 +30,31 @@ const {
   fields: items,
   push: addItem,
   remove: removeItem,
-  handleSubmit
+  handleSubmit,
+  setValues
 } = useInvoiceValidation()
 
-onMounted(() => {
-  clientStore.fetchClients()
+onMounted(async () => {
+  await clientStore.fetchClients()
+
+  if (isEditMode.value && invoiceId.value) {
+    const { data: invoiceData, error: fetchError } = await invoiceStore.fetchInvoiceById(invoiceId.value)
+    if (fetchError) {
+      alert('Erreur lors du chargement de la facture: ' + fetchError)
+      router.push('/invoices')
+      return
+    }
+
+    if (invoiceData) {
+      currentInvoice.value = invoiceData // Store the fetched invoice
+      setValues({
+        clientId: invoiceData.client_id,
+        issueDate: invoiceData.issue_date,
+        dueDate: invoiceData.due_date,
+        items: invoiceData.invoice_items || []
+      })
+    }
+  }
 })
 
 const itemTotal = (item: any) => {
@@ -42,28 +67,63 @@ const totalAmount = computed(() => {
 
 const handleSave = handleSubmit(async (formValues) => {
   saving.value = true
-  const { error } = await invoiceStore.createInvoice({
+  let error = null
+  let resultInvoice = null
+
+  const invoicePayload = {
     client_id: formValues.clientId,
     issue_date: formValues.issueDate,
     due_date: formValues.dueDate,
     total_amount: totalAmount.value,
     status: 'sent'
-  }, formValues.items)
+  }
+
+  if (isEditMode.value && invoiceId.value) {
+    const { data, error: updateError } = await invoiceStore.updateInvoice(invoiceId.value, invoicePayload, formValues.items)
+    error = updateError
+    resultInvoice = data
+  } else {
+    const { data, error: createError } = await invoiceStore.createInvoice(invoicePayload, formValues.items)
+    error = createError
+    resultInvoice = data
+  }
 
   saving.value = false
   
   if (!error) {
-    router.push('/invoices')
+    // Update currentInvoice after save for PDF generation
+    if (resultInvoice) {
+        currentInvoice.value = { 
+            ...resultInvoice, 
+            invoice_items: formValues.items,
+            client: clientStore.clients.find(c => c.id === formValues.clientId) // Add client info
+        }
+    }
+    router.push(`/invoices/${resultInvoice?.id || invoiceId.value}`)
   } else {
     alert('Erreur: ' + error)
   }
 })
+
+const handleDownloadPdf = () => {
+  if (currentInvoice.value) {
+    generatePdf(currentInvoice.value)
+  } else {
+    alert('Aucune facture à télécharger. Enregistrez la facture d\'abord.')
+  }
+}
 </script>
 
 <template>
   <div class="space-y-6 max-w-4xl mx-auto">
     <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold tracking-tight">Nouvelle Facture</h1>
+      <h1 class="text-3xl font-bold tracking-tight">
+        {{ isEditMode ? 'Modifier Facture' : 'Nouvelle Facture' }}
+      </h1>
+      <Button v-if="isEditMode && currentInvoice" @click="handleDownloadPdf" variant="outline">
+        <FileDown class="w-4 h-4 mr-2" />
+        Télécharger PDF
+      </Button>
     </div>
 
     <div class="grid gap-6 md:grid-cols-3">

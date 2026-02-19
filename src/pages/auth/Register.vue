@@ -36,6 +36,8 @@ const handleRegister = handleSubmit(async (values) => {
   } catch (err: any) {
     if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('placeholder'))) {
       console.warn('Mode démo: Auth simulée suite à erreur réseau Supabase')
+      // Save name for demo login
+      sessionStorage.setItem('demo_full_name', values.fullName)
       router.push('/login')
     } else {
       error.value = err.message || 'Une erreur est survenue'

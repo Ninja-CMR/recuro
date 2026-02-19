@@ -1,8 +1,21 @@
-import type { Invoice } from '@/types'
+import type { Invoice, InvoiceItem } from '@/types'
 
-export const generatePdf = (invoice: Invoice) => {
+export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[] }) => {
   const printWindow = window.open('', '_blank')
   if (!printWindow) return alert('Pop-up bloqué')
+
+  const itemsHtml = invoice.invoice_items ? invoice.invoice_items.map(item => `
+    <tr>
+      <td>${item.description}</td>
+      <td>${item.quantity}</td>
+      <td>${item.unit_price} €</td>
+      <td>${(item.quantity * item.unit_price).toFixed(2)} €</td>
+    </tr>
+  `).join('') : `
+    <tr>
+      <td colspan="4">Aucun article détaillé.</td>
+    </tr>
+  `
 
   const html = `
     <html>
@@ -44,12 +57,7 @@ export const generatePdf = (invoice: Invoice) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Service principal (Détails non chargés)</td>
-              <td>1</td>
-              <td>${invoice.total_amount} €</td>
-              <td>${invoice.total_amount} €</td>
-            </tr>
+            ${itemsHtml}
           </tbody>
         </table>
 

@@ -20,8 +20,8 @@ export function useInvoiceValidation() {
         items: yup.array().of(
             yup.object({
                 description: yup.string().required('Description requise'),
-                quantity: yup.number().required().min(1, 'Min 1'),
-                unit_price: yup.number().required().min(0, 'Min 0')
+                quantity: yup.number().transform(value => (isNaN(value) || value === null || value === '') ? null : value).nullable().default(0).min(0, 'Min 0'),
+                unit_price: yup.number().transform(value => (isNaN(value) || value === null || value === '') ? null : value).nullable().default(0).min(0, 'Min 0')
             })
         ).min(1, 'Au moins un article est requis')
     })

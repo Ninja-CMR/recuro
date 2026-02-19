@@ -28,11 +28,18 @@ const handleLogin = handleSubmit(async (values) => {
 
     if (err) throw err
     
+    await authStore.fetchUser()
     router.push('/dashboard')
   } catch (err: any) {
     if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('placeholder'))) {
        console.warn('Mode démo: Connexion simulée')
-       authStore.user = { id: 'demo-user', email: values.email } as any
+       const demoName = sessionStorage.getItem('demo_full_name') || 'Utilisateur'
+       authStore.user = { 
+         id: 'demo-user', 
+         email: values.email,
+         user_metadata: { full_name: demoName }
+       } as any
+       authStore.loading = false
        router.push('/dashboard')
     } else {
       error.value = err.message || 'Erreur de connexion'

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '@/services/supabase'
+import { useAuthStore } from './auth'
 import type { Client } from '@/types'
 
 export const useClientStore = defineStore('client', () => {
@@ -35,15 +36,16 @@ export const useClientStore = defineStore('client', () => {
         error.value = null
 
         try {
-            const { data: userData } = await supabase.auth.getUser()
+            const authStore = useAuthStore()
+            const currentUser = authStore.user
 
-            if (!userData.user) throw new Error('Utilisateur non authentifié')
+            if (!currentUser) throw new Error('Utilisateur non authentifié')
 
             const { data, error: err } = await supabase
                 .from('clients')
                 .insert({
                     ...clientData,
-                    user_id: userData.user.id
+                    user_id: currentUser.id
                 })
                 .select()
                 .single()

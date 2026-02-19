@@ -57,7 +57,10 @@ const getClientName = (clientId: string, clientObj?: any) => {
     </div>
 
     <div v-else class="space-y-4">
-      <Card v-for="invoice in invoiceStore.invoices" :key="invoice.id" class="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+      <Card v-for="invoice in invoiceStore.invoices" :key="invoice.id" 
+        class="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors cursor-pointer"
+        @click="router.push(`/invoices/${invoice.id}`)"
+      >
         <div class="flex items-center gap-4">
           <div class="h-10 w-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
             <FileText class="w-5 h-5" />

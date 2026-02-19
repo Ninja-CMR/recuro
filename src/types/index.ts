@@ -27,3 +27,20 @@ export interface InvoiceItem {
     unit_price: number
     amount: number
 }
+
+export interface Subscription {
+    id: string
+    user_id: string
+    client_id: string
+    name: string
+    description?: string
+    amount: number
+    currency: string
+    frequency: 'monthly' | 'quarterly' | 'yearly'
+    start_date: string
+    end_date?: string
+    status: 'active' | 'inactive' | 'cancelled' | 'pending'
+    created_at: string
+    client?: Client // For joined queries
+}
+
