@@ -98,7 +98,7 @@ const handleSendInvoice = async () => {
 
   if (method === 'email') {
     sendingEmail.value = true
-    const { data, error } = await mailService.sendInvoice({
+    const { error } = await mailService.sendInvoice({
       to: client.email,
       subject: `Facture #${invoiceId} - RECURO`,
       invoiceData: invoice.value
