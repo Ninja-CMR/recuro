@@ -16,6 +16,7 @@
     "gsap": "^3.14.2",
     "lucide-vue-next": "^0.563.0",
     "pinia": "^3.0.4",
+    "resend": "^6.9.3",
     "stripe": "^20.3.0",
     "tailwindcss-animate": "^1.0.7",
     "vee-validate": "^4.15.1",

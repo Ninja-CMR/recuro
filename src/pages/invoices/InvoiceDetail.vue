@@ -7,11 +7,14 @@ import Card from '@/components/ui/Card.vue'
 import { FileDown, Edit, ArrowLeft, Send, CheckCircle } from 'lucide-vue-next'
 import { generatePdf } from '@/services/pdfService'
 
+import { mailService } from '@/services/mailService'
+
 const route = useRoute()
 const router = useRouter()
 const invoiceStore = useInvoiceStore()
 const invoice = ref<any>(null)
 const loading = ref(true)
+const sendingEmail = ref(false)
 
 onMounted(async () => {
   const id = route.params.id as string
@@ -94,9 +97,24 @@ const handleSendInvoice = async () => {
   }
 
   if (method === 'email') {
-    const subject = encodeURIComponent(`Facture #${invoiceId} - RECURO`)
-    const body = encodeURIComponent(message)
-    window.location.href = `mailto:${client.email}?subject=${subject}&body=${body}`
+    sendingEmail.value = true
+    const { data, error } = await mailService.sendInvoice({
+      to: client.email,
+      subject: `Facture #${invoiceId} - RECURO`,
+      invoiceData: invoice.value
+    })
+    sendingEmail.value = false
+
+    if (error) {
+       // Fallback to mailto if Edge function fails or is not deployed
+       console.warn('Edge function failed, falling back to mailto:', error)
+       const subject = encodeURIComponent(`Facture #${invoiceId} - RECURO`)
+       const body = encodeURIComponent(message)
+       window.location.href = `mailto:${client.email}?subject=${subject}&body=${body}`
+    } else {
+       alert('Facture envoyée avec succès via Resend !')
+    }
+
   } else if (method === 'whatsapp') {
     if (!client.phone) return alert('Numéro de téléphone requis pour WhatsApp')
     const text = encodeURIComponent(message)
@@ -150,9 +168,9 @@ const handleSendInvoice = async () => {
               <CheckCircle class="w-4 h-4 mr-2" />
               Marquer comme payée
             </Button>
-            <Button class="w-full justify-start" variant="outline" @click="handleSendInvoice">
+            <Button class="w-full justify-start" variant="outline" @click="handleSendInvoice" :disabled="sendingEmail">
               <Send class="w-4 h-4 mr-2" />
-              Renvoyer au client
+              {{ sendingEmail ? 'Envoi...' : 'Renvoyer au client' }}
             </Button>
           </div>
         </Card>
