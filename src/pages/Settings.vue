@@ -4,11 +4,9 @@ import { supabase } from '@/services/supabase'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Input from '@/components/ui/Input.vue'
-import Badge from '@/components/ui/Badge.vue'
 
 const loading = ref(true)
 const userProfile = ref<any>(null)
-const stripeLoading = ref(false)
 
 onMounted(async () => {
   const { data: { user } } = await supabase.auth.getUser()
@@ -23,19 +21,6 @@ onMounted(async () => {
   loading.value = false
 })
 
-const handleUpgrade = async () => {
-  stripeLoading.value = true
-  // In a real app, call your backend to create a Stripe Checkout Session
-  // const { sessionId } = await fetch('/api/create-checkout-session').then(r => r.json())
-  // const stripe = await getStripe()
-  // stripe?.redirectToCheckout({ sessionId })
-  
-  // For demo:
-  setTimeout(() => {
-    alert('Redirection vers Stripe Checkout...')
-    stripeLoading.value = false
-  }, 1000)
-}
 </script>
 
 <template>
@@ -56,31 +41,13 @@ const handleUpgrade = async () => {
         <Button variant="outline">Sauvegarder</Button>
       </Card>
 
-      <!-- Subscription Section -->
-      <Card class="p-6 space-y-4 border-primary/20">
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold">Abonnement</h2>
-            <Badge :variant="userProfile?.subscription_tier === 'premium' ? 'default' : 'secondary'">
-                {{ userProfile?.subscription_tier === 'premium' ? 'Premium' : 'Freemium' }}
-            </Badge>
-        </div>
-        
-        <div v-if="userProfile?.subscription_tier !== 'premium'" class="bg-muted/50 p-4 rounded-md space-y-2">
-            <h3 class="font-medium">Passez à la vitesse supérieure</h3>
-            <p class="text-sm text-muted-foreground">Obtenez des clients illimités, des relances automatiques et plus encore.</p>
-            <ul class="text-sm list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                <li>Clients illimités</li>
-                <li>Facturation récurrente</li>
-                <li>Support prioritaire</li>
-            </ul>
-            <Button class="w-full mt-4" @click="handleUpgrade" :disabled="stripeLoading">
-                Devenir Premium (9€/mois)
-            </Button>
-        </div>
-        
-        <div v-else class="text-sm text-muted-foreground">
-            Vous bénéficiez de toutes les fonctionnalités Premium. Merci de votre confiance !
-        </div>
+      <!-- Info Section -->
+      <Card class="p-6 bg-slate-50 border-slate-200">
+        <h2 class="text-xl font-semibold mb-2">Période de test</h2>
+        <p class="text-sm text-muted-foreground">
+          Recuro est actuellement en phase de test. Toutes les fonctionnalités Premium sont offertes gratuitement. 
+          Profitez d'un usage illimité pour nous aider à améliorer l'outil.
+        </p>
       </Card>
     </div>
   </div>

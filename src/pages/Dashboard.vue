@@ -13,7 +13,6 @@ import {
   AlertCircle, 
   FileText, 
   CheckCircle2, 
-  Lock,
   ChevronDown
 } from 'lucide-vue-next'
 
@@ -60,9 +59,6 @@ const getStatusVariant = (status: string) => {
   }
 }
 
-// Subscription limits
-const activeSubs = computed(() => subscriptionStore.subscriptions.length)
-const maxSubs = computed(() => authStore.userProfile?.subscription_tier === 'premium' ? 999999 : 3)
 
 </script>
 
@@ -194,45 +190,20 @@ const maxSubs = computed(() => authStore.userProfile?.subscription_tier === 'pre
             </Card>
         </div>
 
-        <!-- Right Column: Subs & Upgrade -->
+        <!-- Right Column: Info -->
         <div class="space-y-6">
-            
-            <!-- 4️⃣ Subscriptions Status -->
-            <Card class="p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold text-sm">Abonnements actifs</h3>
-                    <Badge variant="secondary" class="font-normal capitalize">{{ authStore.userProfile?.subscription_tier }}</Badge>
-                </div>
-                
-                <div class="mb-2">
-                    <span class="text-2xl font-bold">{{ activeSubs }}</span>
-                    <span v-if="authStore.userProfile?.subscription_tier === 'freemium'" class="text-muted-foreground text-sm"> / {{ maxSubs }}</span>
-                </div>
-                
-                <div v-if="authStore.userProfile?.subscription_tier === 'freemium'" class="w-full bg-secondary h-2 rounded-full overflow-hidden mb-2">
-                    <div class="bg-primary h-full rounded-full transition-all duration-500" :style="{ width: (activeSubs / maxSubs) * 100 + '%' }"></div>
-                </div>
-                
-                <p class="text-xs text-muted-foreground">
-                    {{ authStore.userProfile?.subscription_tier === 'freemium' 
-                       ? `Vous avez utilisé ${activeSubs} de vos ${maxSubs} abonnements gratuits.`
-                       : `Vous profitez d'abonnements illimités avec votre plan Premium.` }}
-                </p>
-            </Card>
-
-            <!-- 5️⃣ Upgrade CTA -->
             <Card class="p-5 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 dark:from-indigo-950/20 dark:to-purple-950/20 dark:border-indigo-900/50">
                 <div class="flex items-start gap-3 mb-4">
                     <div class="p-2 bg-white dark:bg-card rounded-md shadow-sm text-indigo-600">
-                        <Lock class="w-5 h-5" />
+                        <CheckCircle2 class="w-5 h-5" />
                     </div>
                     <div>
-                        <h3 class="font-bold text-indigo-950 dark:text-indigo-100 text-sm">Passez en Premium</h3>
-                        <p class="text-xs text-indigo-700/80 dark:text-indigo-300">Levez toutes les limites.</p>
+                        <h3 class="font-bold text-indigo-950 dark:text-indigo-100 text-sm">Mode MVP Actif</h3>
+                        <p class="text-xs text-indigo-700/80 dark:text-indigo-300">Toutes les fonctionnalités sont débloquées pour vos tests.</p>
                     </div>
                 </div>
                 
-                <ul class="space-y-2 mb-6">
+                <ul class="space-y-2 mb-2">
                     <li class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
                         <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> Abonnements illimités
                     </li>
@@ -240,15 +211,10 @@ const maxSubs = computed(() => authStore.userProfile?.subscription_tier === 'pre
                         <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> Relances automatiques
                     </li>
                     <li class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
-                        <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> Dashboard avancé
+                        <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> Export PDF complet
                     </li>
                 </ul>
-
-                <Button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-none shadow-md" @click="router.push('/settings')">
-                    Découvrir Premium
-                </Button>
             </Card>
-
         </div>
     </div>
   </div>

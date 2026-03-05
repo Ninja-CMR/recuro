@@ -127,9 +127,9 @@ const features = [
 ]
 
 const faqs = [
-  { q: "Est-ce vraiment gratuit ?", a: "Oui, la version Freemium est gratuite à vie pour 3 clients actifs." },
-  { q: "Puis-je arrêter à tout moment ?", a: "Absolument. Recuro est sans engagement." },
-  { q: "Mes données sont-elles en sécurité ?", a: "Nous utilisons le chiffrement SSL 256 bits et ne stockons jamais vos coordonnées bancaires." }
+  { q: "Est-ce vraiment gratuit ?", a: "Oui, pendant toute la phase de test MVP, Recuro est entièrement gratuit et sans aucune limite." },
+  { q: "Puis-je arrêter à tout moment ?", a: "Absolument. Vos données vous appartiennent et vous pouvez les exporter en PDF à tout moment." },
+  { q: "Mes données sont-elles en sécurité ?", a: "Nous utilisons Supabase pour le stockage sécurisé de vos données avec chiffrement de pointe." }
 ]
 </script>
 
@@ -143,11 +143,12 @@ const faqs = [
         Recuro
       </div>
       <div class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600">
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600">
         <a href="#features" class="hover:text-indigo-600 transition-colors">Produit</a>
-        <a href="#pricing" class="hover:text-indigo-600 transition-colors">Tarifs</a>
         <a href="#faq" class="hover:text-indigo-600 transition-colors">FAQ</a>
         <Button variant="ghost" size="sm" @click="router.push('/login')">Se connecter</Button>
-        <Button size="sm" @click="router.push('/register')">Essayer gratuitement</Button>
+        <Button size="sm" @click="router.push('/register')">Essayer l'MVP</Button>
+      </div>
       </div>
     </nav>
 
@@ -166,11 +167,11 @@ const faqs = [
         </p>
         <div class="hero-cta flex flex-col sm:flex-row justify-center gap-4">
           <Button size="lg" class="px-8 h-14 text-md font-semibold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200" @click="router.push('/register')">
-            Démarrer gratuitement
+            Rejoindre la phase de test
             <ArrowRight class="w-4 h-4 ml-2" />
           </Button>
-          <Button variant="outline" size="lg" class="px-8 h-14 text-md font-semibold border-zinc-200 hover:bg-zinc-50" @click="router.push('/dashboard')">
-            Voir la démo
+          <Button variant="outline" size="lg" class="px-8 h-14 text-md font-semibold border-zinc-200 hover:bg-zinc-50" @click="router.push('/login')">
+            Accéder à mon compte
           </Button>
         </div>
       </div>
@@ -256,7 +257,7 @@ const faqs = [
                <Zap class="w-8 h-8" />
             </div>
             <h3 class="text-2xl font-bold mb-4">Générez le lien</h3>
-            <p class="text-zinc-500 leading-relaxed">Plus besoin d'emails complexes. Envoyez un lien de paiement sécurisé Stripe directement par message ou email. Rapide et pro.</p>
+            <p class="text-zinc-500 leading-relaxed">Envoyez vos factures par Email, WhatsApp ou SMS en un clic. Simple, rapide et professionnel.</p>
           </div>
 
           <div class="process-card p-10 bg-zinc-50 rounded-[2.5rem] border border-zinc-100 hover:bg-white hover:shadow-2xl transition-all duration-500 text-left group overflow-hidden relative">
@@ -264,8 +265,8 @@ const faqs = [
             <div class="w-16 h-16 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-8 shadow-lg shadow-indigo-100 group-hover:scale-110 transition-transform duration-500">
                <CheckCircle class="w-8 h-8" />
             </div>
-            <h3 class="text-2xl font-bold mb-4">Encaissez</h3>
-            <p class="text-zinc-500 leading-relaxed">Recuro surveille vos paiements. En cas de retard, une relance automatique et polie est envoyée. L'argent arrive, point final.</p>
+            <h3 class="text-2xl font-bold mb-4">Suivez vos revenus</h3>
+            <p class="text-zinc-500 leading-relaxed">Recuro vous permet de garder un oeil sur vos factures payées et en attente. Ne perdez plus jamais le fil de votre trésorerie.</p>
           </div>
         </div>
 
@@ -337,35 +338,20 @@ const faqs = [
             <p class="text-zinc-400">Le modèle SaaS le plus honnête du marché.</p>
           </div>
 
-          <div class="grid md:grid-cols-2 gap-8 items-stretch">
-            <div class="p-10 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-colors flex flex-col">
-              <h3 class="text-lg font-bold mb-2">Starter</h3>
-              <p class="text-zinc-500 text-sm mb-8">Idéal pour vos premiers projets.</p>
-              <div class="text-5xl font-bold mb-8 tracking-tighter">0€ <span class="text-sm font-normal text-zinc-600 tracking-normal">/mois</span></div>
-              <ul class="space-y-4 mb-12 flex-1 text-sm text-zinc-300">
-                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-emerald-500" /> 3 clients actifs</li>
-                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-emerald-500" /> Factures illimitées</li>
-                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-emerald-500" /> Support par email</li>
-                <li class="flex items-center gap-3 opacity-50"><CheckCircle class="w-4 h-4 text-zinc-600" /> Relances manuelles</li>
+          <div class="max-w-2xl mx-auto">
+            <div class="p-10 rounded-3xl bg-zinc-900/50 border border-indigo-500/50 hover:bg-zinc-900 transition-colors flex flex-col text-center">
+              <h3 class="text-2xl font-bold mb-2">Phase MVP - 100% Gratuit</h3>
+              <p class="text-zinc-400 mb-8">Nous collectons vos retours pour améliorer Recuro.</p>
+              <div class="text-6xl font-black mb-8 tracking-tighter text-indigo-400">0€ <span class="text-sm font-normal text-zinc-600 tracking-normal">pour toujours sur l'accès test</span></div>
+              <ul class="grid grid-cols-2 gap-4 mb-12 text-left text-sm text-zinc-300">
+                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Clients illimités</li>
+                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Factures illimitées</li>
+                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Relances manuelles</li>
+                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Exports PDF</li>
+                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Support Direct</li>
+                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Accès anticipé</li>
               </ul>
-              <Button variant="outline" class="w-full border-zinc-700 hover:bg-zinc-800 text-white" @click="router.push('/register')">Démarrer</Button>
-            </div>
-
-            <div class="p-1 rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600">
-              <div class="h-full w-full bg-zinc-900 rounded-[22px] p-10 flex flex-col relative overflow-hidden">
-                <div class="absolute top-6 right-6 bg-indigo-600 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full px-2 py-1">Best Choice</div>
-                <h3 class="text-lg font-bold mb-2">Pro</h3>
-                <p class="text-zinc-500 text-sm mb-8">Passez à la vitesse supérieure.</p>
-                <div class="text-5xl font-bold mb-8 tracking-tighter">9.99€ <span class="text-sm font-normal text-zinc-600 tracking-normal">/mois</span></div>
-                <ul class="space-y-4 mb-12 flex-1 text-sm text-zinc-300">
-                  <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Clients illimités</li>
-                  <li class="flex items-center gap-3 font-bold text-white"><CheckCircle class="w-4 h-4 text-indigo-400" /> Relances automatiques</li>
-                  <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Multi-devises complet</li>
-                  <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Exports comptables</li>
-                  <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Support VIP 24/7</li>
-                </ul>
-                <Button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold" @click="router.push('/register')">Essayer la version Pro</Button>
-              </div>
+              <Button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-14 text-lg font-bold" @click="router.push('/register')">Démarrer maintenant</Button>
             </div>
           </div>
         </div>

@@ -76,7 +76,7 @@ const handleMarkAsPaid = async () => {
   }
 }
 
-const handleSendInvoice = () => {
+const handleSendInvoice = async () => {
   if (!invoice.value) return
   
   const client = invoice.value.client
@@ -85,8 +85,14 @@ const handleSendInvoice = () => {
   const method = client.preferred_method || 'email'
   const invoiceId = invoice.value.id.split('-')[0].toUpperCase()
   const amount = invoice.value.total_amount.toFixed(2)
-  const message = `Bonjour ${client.name}, voici votre facture #${invoiceId} d'un montant de ${amount} €. Merci pour votre confiance !`
+  const message = `Bonjour ${client.name},\n\nVoici votre facture #${invoiceId} d'un montant de ${amount} €. \n\nVous pouvez nous contacter pour toute question.\n\nMerci pour votre confiance !\n\nL'équipe RECURO`
   
+  // Mark as sent in DB
+  if (invoice.value.status === 'draft') {
+    const { error } = await invoiceStore.updateInvoice(invoice.value.id, { status: 'sent' }, invoice.value.invoice_items)
+    if (!error) invoice.value.status = 'sent'
+  }
+
   if (method === 'email') {
     const subject = encodeURIComponent(`Facture #${invoiceId} - RECURO`)
     const body = encodeURIComponent(message)
@@ -94,14 +100,12 @@ const handleSendInvoice = () => {
   } else if (method === 'whatsapp') {
     if (!client.phone) return alert('Numéro de téléphone requis pour WhatsApp')
     const text = encodeURIComponent(message)
-    // Remove spaces and non-digit characters from phone
     const cleanPhone = client.phone.replace(/\D/g, '')
     window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank')
   } else if (method === 'iphone') {
     if (!client.phone) return alert('Numéro de téléphone requis pour iPhone')
     const body = encodeURIComponent(message)
     const cleanPhone = client.phone.replace(/\D/g, '')
-    // Use sms: scheme which works on iOS to open Messages
     window.location.href = `sms:${cleanPhone}&body=${body}`
   }
 }

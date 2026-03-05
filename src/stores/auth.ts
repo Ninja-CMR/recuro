@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { supabase, isPlaceholder } from '@/services/supabase'
+import { supabase } from '@/services/supabase'
 import type { User } from '@supabase/supabase-js'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -8,12 +8,6 @@ export const useAuthStore = defineStore('auth', () => {
     const loading = ref(true)
 
     const fetchUser = async () => {
-        // In placeholder mode, if we manually set a user (demo), don't overwrite it
-        if (isPlaceholder && user.value?.id === 'demo-user') {
-            loading.value = false
-            return
-        }
-
         loading.value = true
         try {
             const { data, error } = await supabase.auth.getUser()
@@ -71,7 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
             full_name: profile.value?.full_name || user.value.user_metadata?.full_name || 'Utilisateur',
             company_name: profile.value?.company_name,
             address: profile.value?.address,
-            subscription_tier: profile.value?.subscription_tier || 'freemium',
+            subscription_tier: 'premium',
             initials: (profile.value?.full_name || user.value.user_metadata?.full_name || 'U')
                 .split(' ')
                 .map((n: string) => n[0])

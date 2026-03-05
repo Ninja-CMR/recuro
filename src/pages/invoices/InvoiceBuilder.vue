@@ -70,7 +70,7 @@ const handleSave = handleSubmit(async (formValues) => {
   let error = null
   let resultInvoice = null
 
-  const invoicePayload = {
+  const invoicePayload: any = {
     client_id: formValues.clientId,
     issue_date: formValues.issueDate,
     due_date: formValues.dueDate,

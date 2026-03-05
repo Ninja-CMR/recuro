@@ -26,7 +26,7 @@ export function useInvoiceValidation() {
         ).min(1, 'Au moins un article est requis')
     })
 
-    const { errors, defineField, handleSubmit, values } = useForm<InvoiceFormValues>({
+    const { errors, defineField, handleSubmit, values, setValues } = useForm<InvoiceFormValues>({
         validationSchema: schema,
         initialValues: {
             clientId: '',
@@ -56,6 +56,7 @@ export function useInvoiceValidation() {
         fields,
         push,
         remove,
-        handleSubmit
+        handleSubmit,
+        setValues
     }
 }
