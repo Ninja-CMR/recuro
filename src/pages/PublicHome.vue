@@ -137,18 +137,25 @@ const faqs = [
   <div class="flex flex-col min-h-screen bg-[#FDFDFD] text-[#1A1A1A] overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-900">
     
     <!-- Navigation (Floating) -->
-    <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/50 border-b border-zinc-100">
-      <div class="flex items-center gap-2 font-bold text-xl tracking-tight">
-        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-xs">R</div>
-        Recuro
+    <nav class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/70 border-b border-zinc-100 shadow-sm">
+      <div class="flex items-center gap-2 md:gap-3 font-bold text-lg md:text-xl tracking-tight cursor-pointer" @click="router.push('/')">
+        <img src="/logo.png" alt="Recuro Logo" class="w-8 h-8 md:w-10 md:h-10 object-contain" />
+        <span class="text-indigo-950">Recuro</span>
       </div>
-      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600">
+      <!-- Desktop Links -->
       <div class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600">
         <a href="#features" class="hover:text-indigo-600 transition-colors">Produit</a>
         <a href="#faq" class="hover:text-indigo-600 transition-colors">FAQ</a>
         <Button variant="ghost" size="sm" @click="router.push('/login')">Se connecter</Button>
-        <Button size="sm" @click="router.push('/register')">Essayer l'MVP</Button>
       </div>
+
+      <!-- Main CTA (Visible on Mobile too) -->
+      <div class="flex items-center gap-4">
+        <Button class="md:hidden" variant="ghost" size="sm" @click="router.push('/login')">Connexion</Button>
+        <Button size="sm" @click="router.push('/register')">
+          <span class="hidden xs:inline">Essayer l'MVP</span>
+          <span class="xs:hidden">Essayer</span>
+        </Button>
       </div>
     </nav>
 
@@ -406,8 +413,8 @@ const faqs = [
     <footer class="py-12 border-t border-zinc-100 bg-white">
       <div class="container mx-auto px-6">
         <div class="flex flex-col md:flex-row justify-between items-center gap-12">
-          <div class="flex items-center gap-2 font-bold text-2xl tracking-tighter">
-            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-xs">R</div>
+          <div class="flex items-center gap-3 font-bold text-2xl tracking-tighter">
+            <img src="/logo.png" alt="Recuro Logo" class="w-8 h-8 object-contain" />
             Recuro
           </div>
           <div class="flex flex-wrap justify-center gap-12 text-sm font-semibold text-zinc-400">

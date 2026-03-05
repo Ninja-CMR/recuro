@@ -41,7 +41,10 @@ const handleLogin = handleSubmit(async (values) => {
 <template>
   <div class="min-h-screen flex items-center justify-center bg-muted/50 px-4">
     <Card class="w-full max-w-sm p-6 space-y-6">
-      <div class="space-y-2 text-center">
+      <div class="space-y-4 text-center">
+        <div class="flex justify-center mb-2">
+          <img src="/logo.png" alt="Recuro Logo" class="w-16 h-16 object-contain" />
+        </div>
         <h1 class="text-2xl font-bold tracking-tight">Connexion</h1>
         <p class="text-sm text-muted-foreground">Entrez vos identifiants pour accéder à Recuro</p>
       </div>

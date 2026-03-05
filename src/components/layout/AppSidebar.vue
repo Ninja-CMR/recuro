@@ -25,7 +25,8 @@ const handleLogout = async () => {
 
 <template>
   <aside class="w-64 border-r border-border bg-card hidden md:flex flex-col h-screen fixed left-0 top-0 z-30">
-    <div class="h-16 flex items-center px-6 border-b border-border">
+    <div class="h-16 flex items-center px-6 border-b border-border gap-3">
+      <img src="/logo.png" alt="Recuro Logo" class="w-8 h-8 object-contain" />
       <span class="text-xl font-bold tracking-tight">Recuro</span>
     </div>
 
