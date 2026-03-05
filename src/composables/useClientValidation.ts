@@ -5,7 +5,9 @@ export function useClientValidation() {
     const schema = yup.object({
         name: yup.string().required('Le nom est requis').min(2, 'Trop court'),
         email: yup.string().email('Email invalide').nullable(),
-        address: yup.string().nullable()
+        address: yup.string().nullable(),
+        phone: yup.string().nullable(),
+        preferred_method: yup.string().oneOf(['email', 'whatsapp', 'iphone']).nullable()
     })
 
     const { errors, defineField, handleSubmit, resetForm, setValues } = useForm({
@@ -13,13 +15,17 @@ export function useClientValidation() {
         initialValues: {
             name: '',
             email: '',
-            address: ''
+            address: '',
+            phone: '',
+            preferred_method: 'email'
         }
     })
 
     const [name, nameProps] = defineField('name')
     const [email, emailProps] = defineField('email')
     const [address, addressProps] = defineField('address')
+    const [phone, phoneProps] = defineField('phone')
+    const [preferred_method, preferredMethodProps] = defineField('preferred_method')
 
     return {
         errors,
@@ -29,6 +35,10 @@ export function useClientValidation() {
         emailProps,
         address,
         addressProps,
+        phone,
+        phoneProps,
+        preferred_method,
+        preferredMethodProps,
         handleSubmit,
         resetForm,
         setValues

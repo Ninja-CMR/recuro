@@ -43,7 +43,14 @@ export const useAuthStore = defineStore('auth', () => {
                 .eq('id', userId)
                 .single()
 
-            if (profileErr) throw profileErr
+            if (profileErr) {
+                // If no profile found, don't treat it as a scary error
+                if (profileErr.code === 'PGRST116') {
+                    profile.value = null
+                    return
+                }
+                throw profileErr
+            }
             profile.value = data
         } catch (err) {
             console.error('Error fetching profile:', err)

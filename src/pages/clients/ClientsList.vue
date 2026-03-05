@@ -7,16 +7,19 @@ import Input from '@/components/ui/Input.vue'
 import { Plus, Trash2, Pencil } from 'lucide-vue-next'
 
 import { useClientValidation } from '@/composables/useClientValidation'
+import type { Client } from '@/types'
 
 const clientStore = useClientStore()
 const showCreateForm = ref(false)
 const editingClientId = ref<string | null>(null)
 
 const { 
-  errors, 
-  name, nameProps, 
-  email, emailProps, 
+  errors,
+  name, nameProps,
+  email, emailProps,
   address, addressProps, 
+  phone, phoneProps,
+  preferred_method, preferredMethodProps,
   handleSubmit, 
   resetForm,
   setValues
@@ -46,16 +49,19 @@ const startEdit = (client: any) => {
     setValues({
       name: client.name,
       email: client.email || '',
-      address: client.address || ''
+      address: client.address || '',
+      phone: client.phone || '',
+      preferred_method: client.preferred_method || 'email'
     })
     showCreateForm.value = true
 }
 
 const onFormSubmit = handleSubmit(async (values) => {
   const isEditing = !!editingClientId.value
+  const clientData = values as Partial<Client>
   const action = isEditing
-    ? clientStore.updateClient(editingClientId.value!, values)
-    : clientStore.createClient(values)
+    ? clientStore.updateClient(editingClientId.value!, clientData)
+    : clientStore.createClient(clientData)
     
   const { error } = await action
   
@@ -108,6 +114,17 @@ const handleDelete = async (id: string) => {
           <Input v-model="email" v-bind="emailProps" label="Email" type="email" placeholder="contact@xyz.com" :error="errors.email" />
         </div>
         <Input v-model="address" v-bind="addressProps" label="Adresse" placeholder="123 Rue de la Paix" :error="errors.address" />
+        <div class="grid gap-4 md:grid-cols-2">
+          <Input v-model="phone" v-bind="phoneProps" label="Téléphone" placeholder="+33 6 12 34 56 78" :error="errors.phone" />
+          <div class="space-y-2">
+            <label class="text-sm font-medium leading-none">Méthode d'envoi préférée</label>
+            <select v-model="preferred_method" v-bind="preferredMethodProps" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <option value="email">Email</option>
+              <option value="whatsapp">WhatsApp Business</option>
+              <option value="iphone">iPhone (iMessage/SMS)</option>
+            </select>
+          </div>
+        </div>
         <div class="flex justify-end gap-2">
           <Button type="button" variant="ghost" @click="showCreateForm = false">Annuler</Button>
           <Button type="submit" :disabled="clientStore.loading">
@@ -144,6 +161,12 @@ const handleDelete = async (id: string) => {
         <div class="space-y-1 text-sm text-muted-foreground">
           <p v-if="client.email">{{ client.email }}</p>
           <p v-if="client.address">{{ client.address }}</p>
+          <p v-if="client.phone">{{ client.phone }}</p>
+          <p v-if="client.preferred_method" class="text-xs font-medium mt-1">
+            <span class="bg-primary/10 text-primary px-2 py-0.5 rounded">
+              {{ client.preferred_method === 'whatsapp' ? 'WhatsApp' : client.preferred_method === 'iphone' ? 'iPhone' : 'Email' }}
+            </span>
+          </p>
         </div>
       </Card>
     </div>

@@ -4,6 +4,8 @@ export interface Client {
     name: string
     email?: string
     address?: string
+    phone?: string
+    preferred_method?: 'email' | 'whatsapp' | 'iphone'
     created_at: string
 }
 

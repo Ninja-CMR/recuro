@@ -75,6 +75,36 @@ const handleMarkAsPaid = async () => {
     alert('Erreur: ' + error)
   }
 }
+
+const handleSendInvoice = () => {
+  if (!invoice.value) return
+  
+  const client = invoice.value.client
+  if (!client) return alert('Client non trouvé')
+  
+  const method = client.preferred_method || 'email'
+  const invoiceId = invoice.value.id.split('-')[0].toUpperCase()
+  const amount = invoice.value.total_amount.toFixed(2)
+  const message = `Bonjour ${client.name}, voici votre facture #${invoiceId} d'un montant de ${amount} €. Merci pour votre confiance !`
+  
+  if (method === 'email') {
+    const subject = encodeURIComponent(`Facture #${invoiceId} - RECURO`)
+    const body = encodeURIComponent(message)
+    window.location.href = `mailto:${client.email}?subject=${subject}&body=${body}`
+  } else if (method === 'whatsapp') {
+    if (!client.phone) return alert('Numéro de téléphone requis pour WhatsApp')
+    const text = encodeURIComponent(message)
+    // Remove spaces and non-digit characters from phone
+    const cleanPhone = client.phone.replace(/\D/g, '')
+    window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank')
+  } else if (method === 'iphone') {
+    if (!client.phone) return alert('Numéro de téléphone requis pour iPhone')
+    const body = encodeURIComponent(message)
+    const cleanPhone = client.phone.replace(/\D/g, '')
+    // Use sms: scheme which works on iOS to open Messages
+    window.location.href = `sms:${cleanPhone}&body=${body}`
+  }
+}
 </script>
 
 <template>
@@ -116,7 +146,7 @@ const handleMarkAsPaid = async () => {
               <CheckCircle class="w-4 h-4 mr-2" />
               Marquer comme payée
             </Button>
-            <Button class="w-full justify-start" variant="outline">
+            <Button class="w-full justify-start" variant="outline" @click="handleSendInvoice">
               <Send class="w-4 h-4 mr-2" />
               Renvoyer au client
             </Button>
