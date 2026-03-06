@@ -160,12 +160,8 @@ const faqs = [
     </nav>
 
     <!-- 1️⃣ HERO SECTION -->
-    <header class="relative pt-32 pb-20 md:pt-48 md:pb-32 container mx-auto px-6 overflow-hidden">
+    <header class="relative pt-32 pb-10 md:pt-48 md:pb-32 container mx-auto px-6 overflow-hidden">
       <div class="text-center max-w-4xl mx-auto space-y-8 relative z-10">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-semibold uppercase tracking-wider mb-2">
-          <Zap class="w-3 h-3" />
-          Nouveauté : Les relances intelligentes sont là
-        </div>
         <h1 class="hero-title text-5xl md:text-8xl font-bold tracking-tight leading-[1.1]">
           Facturez avec <span class="text-indigo-600">élégance</span>.
         </h1>
