@@ -129,5 +129,11 @@ export const useSubscriptionStore = defineStore('subscription', () => {
         }
     }
 
-    return { subscriptions, loading, error, fetchSubscriptions, createSubscription, updateSubscription, deleteSubscription, fetchSubscriptionById }
+    const reset = () => {
+        subscriptions.value = []
+        loading.value = false
+        error.value = null
+    }
+
+    return { subscriptions, loading, error, fetchSubscriptions, createSubscription, updateSubscription, deleteSubscription, fetchSubscriptionById, reset }
 })

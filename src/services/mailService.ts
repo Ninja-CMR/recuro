@@ -1,27 +1,22 @@
-import { supabase } from './supabase'
+// Manual email service for MVP
 
 export interface MailOptions {
     to: string
-    subject: string
-    invoiceData: any
+    subject?: string
+    invoiceData?: any
 }
 
 export const mailService = {
     async sendInvoice(options: MailOptions) {
         try {
-            const { data, error } = await supabase.functions.invoke('send-invoice', {
-                body: {
-                    to: options.to,
-                    subject: options.subject,
-                    invoice: options.invoiceData
-                }
-            })
+            console.log('Manual email sending requested for:', options.to)
 
-            if (error) throw error
-            return { data, error: null }
+            // For MVP, we default to manual sending (mailto:)
+            // This avoids domain/SMTP issues for the user
+            return { data: { manual: true }, error: null }
         } catch (error: any) {
-            console.error('Error sending email:', error)
-            return { data: null, error: error.message || 'Erreur lors de l\'envoi de l\'email' }
+            console.error('Error in mail service:', error)
+            return { data: null, error: error.message || 'Erreur lors de la préparation de l\'email' }
         }
     }
 }

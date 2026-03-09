@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/services/supabase'
 import type { User } from '@supabase/supabase-js'
+import { useInvoiceStore } from './invoice'
+import { useClientStore } from './client'
+import { useSubscriptionStore } from './subscription'
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref<User | null>(null)
@@ -56,6 +59,11 @@ export const useAuthStore = defineStore('auth', () => {
         await supabase.auth.signOut()
         user.value = null
         profile.value = null
+
+        // Reset all stores to clear sensitive data
+        useInvoiceStore().reset()
+        useClientStore().reset()
+        useSubscriptionStore().reset()
     }
 
     const userProfile = computed(() => {

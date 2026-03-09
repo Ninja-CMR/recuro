@@ -2,19 +2,21 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useInvoiceStore } from '@/stores/invoice'
+import { useAuthStore } from '@/stores/auth'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import { FileDown, Edit, ArrowLeft, Send, CheckCircle } from 'lucide-vue-next'
 import { generatePdf } from '@/services/pdfService'
-
-import { mailService } from '@/services/mailService'
+import { useSendInvoice } from '@/composables/useSendInvoice'
 
 const route = useRoute()
 const router = useRouter()
 const invoiceStore = useInvoiceStore()
+const authStore = useAuthStore()
 const invoice = ref<any>(null)
 const loading = ref(true)
 const sendingEmail = ref(false)
+const { sendInvoice } = useSendInvoice()
 
 onMounted(async () => {
   const id = route.params.id as string
@@ -65,7 +67,7 @@ const getStatusLabel = (status: string) => {
 
 const handleDownloadPdf = () => {
   if (invoice.value) {
-    generatePdf(invoice.value)
+    generatePdf(invoice.value, authStore.userProfile)
   }
 }
 
@@ -82,49 +84,20 @@ const handleMarkAsPaid = async () => {
 const handleSendInvoice = async () => {
   if (!invoice.value) return
   
-  const client = invoice.value.client
-  if (!client) return alert('Client non trouvé')
-  
-  const method = client.preferred_method || 'email'
-  const invoiceId = invoice.value.id.split('-')[0].toUpperCase()
-  const amount = invoice.value.total_amount.toFixed(2)
-  const message = `Bonjour ${client.name},\n\nVoici votre facture #${invoiceId} d'un montant de ${amount} €. \n\nVous pouvez nous contacter pour toute question.\n\nMerci pour votre confiance !\n\nL'équipe RECURO`
-  
-  // Mark as sent in DB
-  if (invoice.value.status === 'draft') {
-    const { error } = await invoiceStore.updateInvoice(invoice.value.id, { status: 'sent' }, invoice.value.invoice_items)
-    if (!error) invoice.value.status = 'sent'
-  }
-
-  if (method === 'email') {
-    sendingEmail.value = true
-    const { error } = await mailService.sendInvoice({
-      to: client.email,
-      subject: `Facture #${invoiceId} - RECURO`,
-      invoiceData: invoice.value
-    })
-    sendingEmail.value = false
-
-    if (error) {
-       // Fallback to mailto if Edge function fails or is not deployed
-       console.warn('Edge function failed, falling back to mailto:', error)
-       const subject = encodeURIComponent(`Facture #${invoiceId} - RECURO`)
-       const body = encodeURIComponent(message)
-       window.location.href = `mailto:${client.email}?subject=${subject}&body=${body}`
-    } else {
-       alert('Facture envoyée avec succès via Resend !')
+  sendingEmail.value = true
+  try {
+    const result = await sendInvoice(invoice.value)
+    if (result.success && !result.manual) {
+      alert('Facture envoyée avec succès !')
     }
-
-  } else if (method === 'whatsapp') {
-    if (!client.phone) return alert('Numéro de téléphone requis pour WhatsApp')
-    const text = encodeURIComponent(message)
-    const cleanPhone = client.phone.replace(/\D/g, '')
-    window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank')
-  } else if (method === 'iphone') {
-    if (!client.phone) return alert('Numéro de téléphone requis pour iPhone')
-    const body = encodeURIComponent(message)
-    const cleanPhone = client.phone.replace(/\D/g, '')
-    window.location.href = `sms:${cleanPhone}&body=${body}`
+    // Update local status if it was sent
+    if (invoice.value.status === 'draft') {
+      invoice.value.status = 'sent'
+    }
+  } catch (err: any) {
+    alert('Erreur: ' + err.message)
+  } finally {
+    sendingEmail.value = false
   }
 }
 </script>
@@ -183,15 +156,16 @@ const handleSendInvoice = async () => {
               <p class="text-muted-foreground">Émise le {{ formatDate(invoice.issue_date) }}</p>
             </div>
             <div class="text-right">
-              <div class="text-xl font-black text-primary">RECURO</div>
+              <div class="text-xl font-black text-primary">{{ authStore.userProfile?.company_name || 'RECURO' }}</div>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-8 py-8 border-y">
             <div>
               <h3 class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">De</h3>
-              <p class="font-semibold">Votre Entreprise</p>
-              <p class="text-sm text-muted-foreground">contact@votreentreprise.com</p>
+              <p class="font-semibold">{{ authStore.userProfile?.full_name || authStore.userProfile?.company_name || 'Votre Entreprise' }}</p>
+              <p v-if="authStore.userProfile?.company_name && authStore.userProfile?.full_name" class="text-sm font-medium">{{ authStore.userProfile?.company_name }}</p>
+              <p class="text-sm text-muted-foreground">{{ authStore.userProfile?.email || 'contact@votreentreprise.com' }}</p>
             </div>
             <div class="text-right">
               <h3 class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">À</h3>

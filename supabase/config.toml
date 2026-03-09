@@ -1,0 +1,7 @@
+project_id = "bifsejtgzskupzqmvvdm"
+
+[functions.send-invoice]
+verify_jwt = true
+
+[functions.welcome-email]
+verify_jwt = true
