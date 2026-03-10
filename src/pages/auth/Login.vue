@@ -8,9 +8,11 @@ import Card from '@/components/ui/Card.vue'
 
 import { useLoginValidation } from '@/composables/useAuthValidation'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 const loading = ref(false)
 const error = ref('')
 
@@ -31,7 +33,7 @@ const handleLogin = handleSubmit(async (values) => {
     await authStore.fetchUser()
     router.push('/dashboard')
     } catch (err: any) {
-      error.value = err.message || 'Erreur de connexion'
+      error.value = err.message || t('auth.err_login')
     } finally {
     loading.value = false
   }
@@ -42,22 +44,22 @@ const handleLogin = handleSubmit(async (values) => {
   <div class="min-h-screen flex items-center justify-center bg-muted/50 px-4">
     <Card class="w-full max-w-sm p-6 space-y-6">
       <div class="space-y-4 text-center">
-        <div class="flex justify-center mb-2">
-          <img src="/logo.png" alt="Recuro Logo" class="w-16 h-16 object-contain" />
+        <div class="flex justify-center mb-6">
+          <img src="/logo.svg" alt="Recuro Logo" class="h-14 w-auto object-contain" />
         </div>
-        <h1 class="text-2xl font-bold tracking-tight">Connexion</h1>
-        <p class="text-sm text-muted-foreground">Entrez vos identifiants pour accéder à Recuro</p>
+        <h1 class="text-2xl font-bold tracking-tight">{{ t('auth.login_title') }}</h1>
+        <p class="text-sm text-muted-foreground">{{ t('auth.login_subtitle') }}</p>
       </div>
       <form @submit.prevent="handleLogin" class="space-y-4">
-        <Input v-model="email" v-bind="emailProps" label="Email" type="email" placeholder="john@example.com" :error="errors.email" />
-        <Input v-model="password" v-bind="passwordProps" label="Mot de passe" type="password" :error="errors.password" />
+        <Input v-model="email" v-bind="emailProps" :label="t('auth.email_label')" type="email" :placeholder="t('auth.email_placeholder')" :error="errors.email" />
+        <Input v-model="password" v-bind="passwordProps" :label="t('auth.password_label')" type="password" :error="errors.password" />
         <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
         <Button class="w-full" :disabled="loading" type="submit">
-          {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
+          {{ loading ? t('auth.login_loading') : t('auth.login_button') }}
         </Button>
       </form>
       <div class="text-center text-sm">
-        Pas encore de compte ? <router-link to="/register" class="underline hover:text-primary">Créer un compte</router-link>
+        {{ t('auth.no_account') }} <router-link to="/register" class="underline hover:text-primary">{{ t('auth.create_account') }}</router-link>
       </div>
     </Card>
   </div>

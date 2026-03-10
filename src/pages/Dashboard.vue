@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useInvoiceStore } from '@/stores/invoice'
 import { useClientStore } from '@/stores/client'
@@ -17,6 +18,7 @@ import {
 } from 'lucide-vue-next'
 
 const router = useRouter()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const invoiceStore = useInvoiceStore()
 const clientStore = useClientStore()
@@ -34,7 +36,7 @@ onMounted(async () => {
 })
 
 const userName = computed(() => {
-    return authStore.userProfile?.full_name || 'Utilisateur'
+    return authStore.userProfile?.full_name || t('nav.user')
 })
 
 const formatCurrency = (value: number) => {
@@ -47,7 +49,7 @@ const recentInvoices = computed(() => {
 
 const getClientName = (id: string, clientObj?: any) => {
     if (clientObj?.name) return clientObj.name
-    return clientStore.clients.find(c => c.id === id)?.name || 'Client inconnu'
+    return clientStore.clients.find(c => c.id === id)?.name || t('dashboard.unknown_client')
 }
 
 const getStatusVariant = (status: string) => {
@@ -67,21 +69,21 @@ const getStatusVariant = (status: string) => {
     <!-- 1️⃣ Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold tracking-tight">Bonjour {{ userName }} 👋</h1>
-            <p class="text-muted-foreground">Voici ce qu'il se passe sur votre compte.</p>
+            <h1 class="text-2xl font-bold tracking-tight">{{ t('dashboard.greeting', { name: userName }) }}</h1>
+            <p class="text-muted-foreground">{{ t('dashboard.subtitle') }}</p>
         </div>
         
         <div class="flex items-center gap-3">
             <div class="relative">
                  <select v-model="period" class="h-10 pl-3 pr-8 rounded-md border border-input bg-background text-sm focus:ring-2 focus:ring-ring appearance-none cursor-pointer">
-                    <option value="this-month">Ce mois-ci</option>
-                    <option value="last-month">Mois dernier</option>
+                    <option value="this-month">{{ t('dashboard.period_this_month') }}</option>
+                    <option value="last-month">{{ t('dashboard.period_last_month') }}</option>
                 </select>
                 <ChevronDown class="w-4 h-4 absolute right-2 top-3 pointer-events-none opacity-50" />
             </div>
             <Button @click="router.push('/invoices/new')">
                 <Plus class="w-4 h-4 mr-2" />
-                Nouvelle facture
+                {{ t('dashboard.new_invoice') }}
             </Button>
         </div>
     </div>
@@ -91,8 +93,8 @@ const getStatusVariant = (status: string) => {
         <!-- Revenue -->
         <Card class="p-6 space-y-2">
             <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-muted-foreground">Revenus encaissés</span>
-                <Badge variant="outline" class="bg-green-50 text-green-700 border-green-200">Ce mois-ci</Badge>
+                <span class="text-sm font-medium text-muted-foreground">{{ t('dashboard.revenue_received') }}</span>
+                <Badge variant="outline" class="bg-green-50 text-green-700 border-green-200">{{ t('dashboard.period_this_month') }}</Badge>
             </div>
             <div class="text-2xl font-bold">
                 {{ formatCurrency(invoiceStore.totalRevenue) }}
@@ -102,28 +104,28 @@ const getStatusVariant = (status: string) => {
         <!-- Invoices Sent -->
         <Card class="p-6 space-y-2">
              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-muted-foreground">Factures envoyées</span>
+                <span class="text-sm font-medium text-muted-foreground">{{ t('dashboard.invoices_sent') }}</span>
                 <FileText class="w-4 h-4 text-muted-foreground" />
             </div>
             <div class="text-2xl font-bold">
                 {{ invoiceStore.invoices.length }}
             </div>
             <p class="text-xs text-muted-foreground">
-                {{ invoiceStore.paidCount }} payées / {{ invoiceStore.pendingCount }} en attente
+                {{ invoiceStore.paidCount }} {{ t('dashboard.paid') }} / {{ invoiceStore.pendingCount }} {{ t('dashboard.pending') }}
             </p>
         </Card>
 
         <!-- Overdue -->
         <Card class="p-6 space-y-2 border-l-4 border-l-destructive/50">
              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-muted-foreground">En retard</span>
+                <span class="text-sm font-medium text-muted-foreground">{{ t('dashboard.overdue') }}</span>
                 <AlertCircle class="w-4 h-4 text-destructive" />
             </div>
             <div class="text-2xl font-bold text-destructive">
                 {{ invoiceStore.overdueCount }}
             </div>
             <p class="text-xs text-destructive/80">
-                Nécessitent une relance
+                {{ t('dashboard.need_reminder') }}
             </p>
         </Card>
     </div>
@@ -132,8 +134,8 @@ const getStatusVariant = (status: string) => {
         <!-- 3️⃣ Recent Invoices (Merged col-span-2) -->
         <div class="md:col-span-2 space-y-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold">Factures récentes</h2>
-                <Button variant="ghost" size="sm" class="text-xs" @click="router.push('/invoices')">Tout voir</Button>
+                <h2 class="text-lg font-semibold">{{ t('dashboard.recent_invoices') }}</h2>
+                <Button variant="ghost" size="sm" class="text-xs" @click="router.push('/invoices')">{{ t('dashboard.see_all') }}</Button>
             </div>
 
             <!-- Empty State -->
@@ -143,9 +145,9 @@ const getStatusVariant = (status: string) => {
                         <FileText class="w-6 h-6 text-muted-foreground" />
                     </div>
                 </div>
-                <h3 class="font-medium mb-1">Aucune facture pour le moment</h3>
-                <p class="text-sm text-muted-foreground mb-4">Créez votre première facture pour commencer.</p>
-                <Button @click="router.push('/invoices/new')">Créer ma première facture</Button>
+                <h3 class="font-medium mb-1">{{ t('dashboard.no_invoices') }}</h3>
+                <p class="text-sm text-muted-foreground mb-4">{{ t('dashboard.create_first_invoice') }}</p>
+                <Button @click="router.push('/invoices/new')">{{ t('dashboard.btn_create_first') }}</Button>
             </Card>
 
             <!-- Table -->
@@ -154,10 +156,10 @@ const getStatusVariant = (status: string) => {
                     <table class="w-full text-sm text-left">
                         <thead class="bg-muted/30 text-muted-foreground border-b">
                             <tr>
-                                <th class="px-4 py-3 font-medium">Client</th>
-                                <th class="px-4 py-3 font-medium">Montant</th>
-                                <th class="px-4 py-3 font-medium">Statut</th>
-                                <th class="px-4 py-3 font-medium text-right">Action</th>
+                                <th class="px-4 py-3 font-medium">{{ t('dashboard.col_client') }}</th>
+                                <th class="px-4 py-3 font-medium">{{ t('dashboard.col_amount') }}</th>
+                                <th class="px-4 py-3 font-medium">{{ t('dashboard.col_status') }}</th>
+                                <th class="px-4 py-3 font-medium text-right">{{ t('dashboard.col_action') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -180,7 +182,7 @@ const getStatusVariant = (status: string) => {
                                         class="h-8 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                                         @click="router.push(`/invoices/${invoice.id}`)"
                                     >
-                                        Voir
+                                        {{ t('dashboard.action_view') }}
                                     </Button>
                                 </td>
                             </tr>
@@ -198,20 +200,20 @@ const getStatusVariant = (status: string) => {
                         <CheckCircle2 class="w-5 h-5" />
                     </div>
                     <div>
-                        <h3 class="font-bold text-indigo-950 dark:text-indigo-100 text-sm">Mode MVP Actif</h3>
-                        <p class="text-xs text-indigo-700/80 dark:text-indigo-300">Toutes les fonctionnalités sont débloquées pour vos tests.</p>
+                        <h3 class="font-bold text-indigo-950 dark:text-indigo-100 text-sm">{{ t('dashboard.mvp_title') }}</h3>
+                        <p class="text-xs text-indigo-700/80 dark:text-indigo-300">{{ t('dashboard.mvp_desc') }}</p>
                     </div>
                 </div>
                 
                 <ul class="space-y-2 mb-2">
                     <li class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
-                        <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> Abonnements illimités
+                        <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> {{ t('dashboard.feature_subscriptions') }}
                     </li>
                     <li class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
-                        <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> Relances automatiques
+                        <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> {{ t('dashboard.feature_reminders') }}
                     </li>
                     <li class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
-                        <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> Export PDF complet
+                        <CheckCircle2 class="w-3.5 h-3.5 text-indigo-500" /> {{ t('dashboard.feature_export') }}
                     </li>
                 </ul>
             </Card>

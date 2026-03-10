@@ -8,8 +8,10 @@ import Card from '@/components/ui/Card.vue'
 import Badge from '@/components/ui/Badge.vue'
 import { Plus, FileText } from 'lucide-vue-next'
 import type { Client } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 const invoiceStore = useInvoiceStore()
 const clientStore = useClientStore()
 
@@ -33,27 +35,27 @@ const formatDate = (dateStr: string) => {
 
 const getClientName = (clientId: string, clientObj?: any) => {
   if (clientObj?.name) return clientObj.name
-  return clientStore.clients.find((c: Client) => c.id === clientId)?.name || 'Client inconnu'
+  return clientStore.clients.find((c: Client) => c.id === clientId)?.name || t('invoices_list.unknown_client')
 }
 </script>
 
 <template>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold tracking-tight">Factures</h1>
+      <h1 class="text-3xl font-bold tracking-tight">{{ t('invoices_list.title') }}</h1>
       <Button @click="router.push('/invoices/new')">
         <Plus class="w-4 h-4 mr-2" />
-        Nouvelle Facture
+        {{ t('invoices_list.btn_new') }}
       </Button>
     </div>
 
     <div v-if="invoiceStore.loading && invoiceStore.invoices.length === 0" class="text-center py-10 text-muted-foreground">
-      Chargement...
+      {{ t('invoices_list.loading') }}
     </div>
 
     <div v-else-if="invoiceStore.invoices.length === 0" class="rounded-md border p-12 text-center text-muted-foreground">
-      <p class="mb-2">Aucune facture pour le moment.</p>
-      <Button variant="ghost" @click="router.push('/invoices/new')">Créer votre première facture</Button>
+      <p class="mb-2">{{ t('invoices_list.empty_title') }}</p>
+      <Button variant="ghost" @click="router.push('/invoices/new')">{{ t('invoices_list.btn_create_first') }}</Button>
     </div>
 
     <div v-else class="space-y-4">

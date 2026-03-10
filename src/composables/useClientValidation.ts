@@ -2,12 +2,16 @@ import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 
 export function useClientValidation() {
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/
+
     const schema = yup.object({
         name: yup.string().required('Le nom est requis').min(2, 'Trop court'),
-        email: yup.string().email('Email invalide').nullable(),
-        address: yup.string().nullable(),
-        phone: yup.string().nullable(),
-        preferred_method: yup.string().oneOf(['email', 'whatsapp', 'iphone']).nullable()
+        email: yup.string().email('Email invalide').required('L\'email est requis'),
+        address: yup.string().required('L\'adresse est requise'),
+        phone: yup.string()
+            .required('Le numéro de téléphone est requis avec l\'indicatif (ex: +33...)')
+            .matches(phoneRegex, 'Format invalide. Utilisez l\'indicatif international (ex: +33612345678)'),
+        preferred_method: yup.string().oneOf(['email', 'whatsapp', 'iphone']).required('Méthode requise')
     })
 
     const { errors, defineField, handleSubmit, resetForm, setValues } = useForm({

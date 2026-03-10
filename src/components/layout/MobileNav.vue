@@ -1,16 +1,19 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { LayoutDashboard, Users, FileText, Repeat, Settings } from 'lucide-vue-next'
 
 const route = useRoute()
+const { t } = useI18n()
 
-const navItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { name: 'Clients', path: '/clients', icon: Users },
-  { name: 'Factures', path: '/invoices', icon: FileText },
-  { name: 'Abos', path: '/subscriptions', icon: Repeat },
-  { name: 'Paramètres', path: '/settings', icon: Settings },
-]
+const navItems = computed(() => [
+  { name: t('nav.dashboard'), path: '/dashboard', icon: LayoutDashboard },
+  { name: t('nav.clients'), path: '/clients', icon: Users },
+  { name: t('nav.invoices'), path: '/invoices', icon: FileText },
+  { name: t('nav.subscriptions'), path: '/subscriptions', icon: Repeat },
+  { name: t('nav.settings'), path: '/settings', icon: Settings },
+])
 
 const isActive = (path: string) => route.path.startsWith(path)
 </script>

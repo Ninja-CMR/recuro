@@ -138,23 +138,23 @@ const faqs = [
     
     <!-- Navigation (Floating) -->
     <nav class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/70 border-b border-zinc-100 shadow-sm">
-      <div class="flex items-center gap-2 md:gap-3 font-bold text-lg md:text-xl tracking-tight cursor-pointer" @click="router.push('/')">
-        <img src="/logo.png" alt="Recuro Logo" class="w-8 h-8 md:w-10 md:h-10 object-contain" />
-        <span class="text-indigo-950">Recuro</span>
+      <div class="flex items-center gap-2 md:gap-3 cursor-pointer" @click="router.push('/')">
+        <img src="/logo.svg" alt="Recuro Logo" class="h-10 md:h-12 w-auto object-contain" />
       </div>
       <!-- Desktop Links -->
       <div class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600">
-        <a href="#features" class="hover:text-indigo-600 transition-colors">Produit</a>
-        <a href="#faq" class="hover:text-indigo-600 transition-colors">FAQ</a>
-        <Button variant="ghost" size="sm" @click="router.push('/login')">Se connecter</Button>
+        <a href="#features" class="hover:text-indigo-600 transition-colors">{{ $t('home.nav_product') }}</a>
+        <a href="#faq" class="hover:text-indigo-600 transition-colors">{{ $t('home.nav_faq') }}</a>
+        <a href="#contact" class="hover:text-indigo-600 transition-colors">{{ $t('home.nav_contact') }}</a>
+        <Button variant="ghost" size="sm" @click="router.push('/login')">{{ $t('home.nav_login') }}</Button>
       </div>
 
       <!-- Main CTA (Visible on Mobile too) -->
       <div class="flex items-center gap-4">
-        <Button class="md:hidden" variant="ghost" size="sm" @click="router.push('/login')">Connexion</Button>
+        <Button class="md:hidden" variant="ghost" size="sm" @click="router.push('/login')">{{ $t('home.nav_login_mobile') }}</Button>
         <Button size="sm" @click="router.push('/register')">
-          <span class="hidden xs:inline">Essayer l'MVP</span>
-          <span class="xs:hidden">Essayer</span>
+          <span class="hidden xs:inline">{{ $t('home.nav_register') }}</span>
+          <span class="xs:hidden">{{ $t('home.nav_register_mobile') }}</span>
         </Button>
       </div>
     </nav>
@@ -163,18 +163,18 @@ const faqs = [
     <header class="relative pt-32 pb-10 md:pt-48 md:pb-32 container mx-auto px-6 overflow-hidden">
       <div class="text-center max-w-4xl mx-auto space-y-8 relative z-10">
         <h1 class="hero-title text-5xl md:text-8xl font-bold tracking-tight leading-[1.1]">
-          Facturez avec <span class="text-indigo-600">élégance</span>.
+          {{ $t('home.title') }} <span class="text-indigo-600">{{ $t('home.title_highlight') }}</span>.
         </h1>
         <p class="hero-subtitle text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto leading-relaxed">
-          La solution de facturation lofi pour les freelances et studios créatifs qui exigent la simplicité sans compromis sur la puissance.
+          {{ $t('home.subtitle') }}
         </p>
         <div class="hero-cta flex flex-col sm:flex-row justify-center gap-4">
           <Button size="lg" class="px-8 h-14 text-md font-semibold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200" @click="router.push('/register')">
-            Rejoindre la phase de test
+            {{ $t('home.cta_primary') }}
             <ArrowRight class="w-4 h-4 ml-2" />
           </Button>
           <Button variant="outline" size="lg" class="px-8 h-14 text-md font-semibold border-zinc-200 hover:bg-zinc-50" @click="router.push('/login')">
-            Accéder à mon compte
+            {{ $t('home.cta_secondary') }}
           </Button>
         </div>
       </div>
@@ -200,48 +200,48 @@ const faqs = [
 
       <div class="grid md:grid-cols-2 gap-12 md:gap-32">
         <div class="space-y-12">
-          <h2 class="text-3xl font-bold mb-8 tracking-tight">Arrêtez de lutter.</h2>
+          <h2 class="text-3xl font-bold mb-8 tracking-tight">{{ $t('home.problem_title') }}</h2>
           <div class="problem-item space-y-4">
             <div class="p-6 bg-zinc-50 rounded-2xl border border-zinc-100 flex gap-4">
               <Clock class="w-6 h-6 text-zinc-400 shrink-0" />
-              <p class="text-zinc-600 font-medium leading-relaxed">Perte de 4h par semaine sur Excel et Word juste pour la gestion administrative.</p>
+              <p class="text-zinc-600 font-medium leading-relaxed">{{ $t('home.problem_1') }}</p>
             </div>
           </div>
           <div class="problem-item space-y-4">
             <div class="p-6 bg-zinc-50 rounded-2xl border border-zinc-100 flex gap-4">
               <AlertCircle class="w-6 h-6 text-zinc-400 shrink-0" />
-              <p class="text-zinc-600 font-medium leading-relaxed">Des impayés qui traînent car vous oubliez de relancer vos clients par gêne ou manque de temps.</p>
+              <p class="text-zinc-600 font-medium leading-relaxed">{{ $t('home.problem_2') }}</p>
             </div>
           </div>
         </div>
 
         <div class="space-y-12 md:pt-32">
-          <h2 class="text-3xl font-bold mb-8 text-indigo-600 tracking-tight">Choisissez la fluidité.</h2>
+          <h2 class="text-3xl font-bold mb-8 text-indigo-600 tracking-tight">{{ $t('home.solution_title') }}</h2>
           <div class="solution-item space-y-4">
             <div class="p-6 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex gap-4 border-l-4 border-l-indigo-600">
               <CheckCircle class="w-6 h-6 text-indigo-600 shrink-0" />
-              <p class="text-indigo-900 font-semibold leading-relaxed">Facturation instantanée en 3 clics avec templates personnalisés.</p>
+              <p class="text-indigo-900 font-semibold leading-relaxed">{{ $t('home.solution_1') }}</p>
             </div>
           </div>
           <div class="solution-item space-y-4">
             <div class="p-6 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex gap-4 border-l-4 border-l-indigo-600">
               <CheckCircle class="w-6 h-6 text-indigo-600 shrink-0" />
-              <p class="text-indigo-900 font-semibold leading-relaxed">Relances automatiques élégantes et paiements en ligne intégrés.</p>
+              <p class="text-indigo-900 font-semibold leading-relaxed">{{ $t('home.solution_2') }}</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 3️⃣ LE PROCESSUS RECURO (Consolidated & Highly Visible) -->
+    <!-- 3️⃣ LE PROCESSUS RECURO -->
     <section id="process" class="process-section py-24 md:py-32 bg-white relative">
       <div class="container mx-auto px-6">
         <div class="text-center max-w-3xl mx-auto mb-20 space-y-4">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold uppercase tracking-widest">
-             Simple & Efficace
+             {{ $t('home.process_subtitle') }}
           </div>
-          <h2 class="text-4xl md:text-5xl font-bold tracking-tight">3 étapes. Zéro stress.</h2>
-          <p class="text-zinc-500 text-lg leading-relaxed">De la prise de contact au virement bancaire, Recuro automatise tout votre flux de facturation.</p>
+          <h2 class="text-4xl md:text-5xl font-bold tracking-tight">{{ $t('home.process_title') }}</h2>
+          <p class="text-zinc-500 text-lg leading-relaxed">{{ $t('home.process_desc') }}</p>
         </div>
 
         <div class="grid md:grid-cols-3 gap-8 mb-20">
@@ -250,8 +250,8 @@ const faqs = [
             <div class="w-16 h-16 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-8 shadow-lg shadow-indigo-100 group-hover:scale-110 transition-transform duration-500">
                <Plus class="w-8 h-8" />
             </div>
-            <h3 class="text-2xl font-bold mb-4">Créez le projet</h3>
-            <p class="text-zinc-500 leading-relaxed">Importez vos clients et définissez vos prestations. En 2 minutes, vous êtes prêt à émettre votre première facture certifiée.</p>
+            <h3 class="text-2xl font-bold mb-4">{{ $t('home.step1_title') }}</h3>
+            <p class="text-zinc-500 leading-relaxed">{{ $t('home.step1_desc') }}</p>
           </div>
 
           <div class="process-card p-10 bg-zinc-50 rounded-[2.5rem] border border-zinc-100 hover:bg-white hover:shadow-2xl transition-all duration-500 text-left group overflow-hidden relative">
@@ -259,8 +259,8 @@ const faqs = [
             <div class="w-16 h-16 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-8 shadow-lg shadow-indigo-100 group-hover:scale-110 transition-transform duration-500">
                <Zap class="w-8 h-8" />
             </div>
-            <h3 class="text-2xl font-bold mb-4">Générez le lien</h3>
-            <p class="text-zinc-500 leading-relaxed">Envoyez vos factures par Email, WhatsApp ou SMS en un clic. Simple, rapide et professionnel.</p>
+            <h3 class="text-2xl font-bold mb-4">{{ $t('home.step2_title') }}</h3>
+            <p class="text-zinc-500 leading-relaxed">{{ $t('home.step2_desc') }}</p>
           </div>
 
           <div class="process-card p-10 bg-zinc-50 rounded-[2.5rem] border border-zinc-100 hover:bg-white hover:shadow-2xl transition-all duration-500 text-left group overflow-hidden relative">
@@ -268,8 +268,8 @@ const faqs = [
             <div class="w-16 h-16 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-8 shadow-lg shadow-indigo-100 group-hover:scale-110 transition-transform duration-500">
                <CheckCircle class="w-8 h-8" />
             </div>
-            <h3 class="text-2xl font-bold mb-4">Suivez vos revenus</h3>
-            <p class="text-zinc-500 leading-relaxed">Recuro vous permet de garder un oeil sur vos factures payées et en attente. Ne perdez plus jamais le fil de votre trésorerie.</p>
+            <h3 class="text-2xl font-bold mb-4">{{ $t('home.step3_title') }}</h3>
+            <p class="text-zinc-500 leading-relaxed">{{ $t('home.step3_desc') }}</p>
           </div>
         </div>
 
@@ -301,30 +301,30 @@ const faqs = [
     <section class="persona-section py-24 md:py-32 bg-white">
       <div class="container mx-auto px-6">
         <div class="text-center mb-16 space-y-4">
-          <h2 class="text-4xl font-bold tracking-tight">Conçu pour votre métier.</h2>
-          <p class="text-zinc-500">Recuro est l'allié des profils qui ont de l'ambition.</p>
+          <h2 class="text-4xl font-bold tracking-tight">{{ $t('home.personas_title') }}</h2>
+          <p class="text-zinc-500">{{ $t('home.personas_desc') }}</p>
         </div>
         <div class="grid md:grid-cols-3 gap-8">
           <div class="persona-card p-8 rounded-3xl border border-zinc-100 bg-white hover:shadow-2xl transition-shadow duration-300 group">
             <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
               <Smartphone class="w-5 h-5" />
             </div>
-            <h3 class="text-xl font-bold mb-3">Freelances Créatifs</h3>
-            <p class="text-zinc-500 text-sm leading-relaxed">Artistes, photographes et designers qui détestent les chiffres mais adorent être payés à temps.</p>
+            <h3 class="text-xl font-bold mb-3">{{ $t('home.persona1_title') }}</h3>
+            <p class="text-zinc-500 text-sm leading-relaxed">{{ $t('home.persona1_desc') }}</p>
           </div>
           <div class="persona-card p-8 rounded-3xl border border-zinc-100 bg-white hover:shadow-2xl transition-shadow duration-300 group">
             <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all">
               <Zap class="w-5 h-5" />
             </div>
-            <h3 class="text-xl font-bold mb-3">Développeurs Indés</h3>
-            <p class="text-zinc-500 text-sm leading-relaxed">Ingénieurs et SaaS makers qui ont besoin de rigueur et d'une automatisation totale.</p>
+            <h3 class="text-xl font-bold mb-3">{{ $t('home.persona2_title') }}</h3>
+            <p class="text-zinc-500 text-sm leading-relaxed">{{ $t('home.persona2_desc') }}</p>
           </div>
           <div class="persona-card p-8 rounded-3xl border border-zinc-100 bg-white hover:shadow-2xl transition-shadow duration-300 group">
             <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-all">
               <Briefcase class="w-5 h-5" />
             </div>
-            <h3 class="text-xl font-bold mb-3">Studios & Agences</h3>
-            <p class="text-zinc-500 text-sm leading-relaxed">Petites structures qui exigent un outil pro pour rassurer leurs grands comptes.</p>
+            <h3 class="text-xl font-bold mb-3">{{ $t('home.persona3_title') }}</h3>
+            <p class="text-zinc-500 text-sm leading-relaxed">{{ $t('home.persona3_desc') }}</p>
           </div>
         </div>
       </div>
@@ -337,24 +337,24 @@ const faqs = [
       <div class="container mx-auto px-6 relative z-10">
         <div class="max-w-4xl mx-auto">
           <div class="text-center mb-16 space-y-4">
-            <h2 class="text-4xl font-bold tracking-tight">Pas de mensonge, pas de surprises.</h2>
-            <p class="text-zinc-400">Le modèle SaaS le plus honnête du marché.</p>
+            <h2 class="text-4xl font-bold tracking-tight">{{ $t('home.pricing_title') }}</h2>
+            <p class="text-zinc-400">{{ $t('home.pricing_subtitle') }}</p>
           </div>
 
           <div class="max-w-2xl mx-auto">
             <div class="p-10 rounded-3xl bg-zinc-900/50 border border-indigo-500/50 hover:bg-zinc-900 transition-colors flex flex-col text-center">
-              <h3 class="text-2xl font-bold mb-2">Phase MVP - 100% Gratuit</h3>
-              <p class="text-zinc-400 mb-8">Nous collectons vos retours pour améliorer Recuro.</p>
-              <div class="text-6xl font-black mb-8 tracking-tighter text-indigo-400">0€ <span class="text-sm font-normal text-zinc-600 tracking-normal">pour toujours sur l'accès test</span></div>
+              <h3 class="text-2xl font-bold mb-2">{{ $t('home.pricing_card_title') }}</h3>
+              <p class="text-zinc-400 mb-8">{{ $t('home.pricing_card_desc') }}</p>
+              <div class="text-6xl font-black mb-8 tracking-tighter text-indigo-400">0$ / 0€ <span class="text-sm font-normal text-zinc-600 tracking-normal">{{ $t('home.pricing_forever') }}</span></div>
               <ul class="grid grid-cols-2 gap-4 mb-12 text-left text-sm text-zinc-300">
                 <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Clients illimités</li>
                 <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Factures illimitées</li>
                 <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Relances manuelles</li>
                 <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Exports PDF</li>
                 <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Support Direct</li>
-                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Accès anticipé</li>
+                <li class="flex items-center gap-3"><CheckCircle class="w-4 h-4 text-indigo-400" /> Facturation internationale</li>
               </ul>
-              <Button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-14 text-lg font-bold" @click="router.push('/register')">Démarrer maintenant</Button>
+              <Button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-14 text-lg font-bold" @click="router.push('/register')">{{ $t('home.cta_primary') }}</Button>
             </div>
           </div>
         </div>
@@ -405,21 +405,128 @@ const faqs = [
       </div>
     </section>
 
+    <!-- 10.5️⃣ CONTACT SECTION -->
+    <section id="contact" class="py-24 bg-zinc-50 border-t border-zinc-100">
+      <div class="container mx-auto px-6 max-w-5xl">
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+          <div class="space-y-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold uppercase tracking-widest">
+               {{ $t('home.contact_badge') }}
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold tracking-tight">{{ $t('home.contact_title') }}</h2>
+            <p class="text-zinc-500 text-lg leading-relaxed">
+              {{ $t('home.contact_desc') }}
+            </p>
+            <div class="space-y-6 pt-4">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-bold text-zinc-800">{{ $t('home.contact_email_title') }}</h4>
+                  <p class="text-zinc-500 text-sm mt-1">{{ $t('home.contact_email_desc') }}</p>
+                  <a href="mailto:hello@recuro.co" class="text-indigo-600 font-medium hover:underline block mt-1">hello@recuro.co</a>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-bold text-zinc-800">{{ $t('home.contact_office_title') }}</h4>
+                  <p class="text-zinc-500 text-sm mt-1">{{ $t('home.contact_office_desc') }}</p>
+                  <address class="not-italic text-zinc-600 mt-1 font-medium">123 Avenue de l'Innovation<br/>75001 Paris, France</address>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white p-8 md:p-10 rounded-3xl border border-zinc-100 shadow-xl relative">
+            <div class="absolute -top-4 -right-4 w-24 h-24 bg-indigo-500/10 blur-2xl rounded-full"></div>
+            <h3 class="text-2xl font-bold mb-6">{{ $t('home.contact_form_title') }}</h3>
+            <form @submit.prevent="" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-zinc-700 mb-1">{{ $t('home.contact_form_name') }}</label>
+                <input type="text" class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" :placeholder="$t('home.contact_form_name')">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-zinc-700 mb-1">{{ $t('home.contact_form_email') }}</label>
+                <input type="email" class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="hello@example.com">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-zinc-700 mb-1">{{ $t('home.contact_form_message') }}</label>
+                <textarea rows="4" class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none" :placeholder="$t('home.contact_form_message')"></textarea>
+              </div>
+              <Button type="button" class="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-medium">{{ $t('home.contact_form_submit') }}</Button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 11️⃣ FOOTER -->
-    <footer class="py-12 border-t border-zinc-100 bg-white">
+    <footer class="pt-20 pb-12 border-t border-zinc-100 bg-white">
       <div class="container mx-auto px-6">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-12">
-          <div class="flex items-center gap-3 font-bold text-2xl tracking-tighter">
-            <img src="/logo.png" alt="Recuro Logo" class="w-8 h-8 object-contain" />
-            Recuro
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+          <div class="space-y-6 md:col-span-1">
+            <div class="flex items-center gap-3">
+              <img src="/logo.svg" alt="Recuro Logo" class="h-10 w-auto object-contain" />
+            </div>
+            <p class="text-zinc-500 text-sm leading-relaxed">
+              {{ $t('home.footer_desc') }}
+            </p>
           </div>
-          <div class="flex flex-wrap justify-center gap-12 text-sm font-semibold text-zinc-400">
-             <a href="#" class="hover:text-indigo-600">Produit</a>
-             <a href="#" class="hover:text-indigo-600">Tarifs</a>
-             <a href="#" class="hover:text-indigo-600">Blog</a>
-             <a href="#" class="hover:text-indigo-600">Mentions Légales</a>
+          
+          <div>
+            <h4 class="font-bold mb-6 text-zinc-800">{{ $t('home.nav_product') }}</h4>
+            <ul class="space-y-4 text-sm text-zinc-500">
+              <li><a href="#features" class="hover:text-indigo-600 transition-colors">Fonctionnalités</a></li>
+              <li><a href="#process" class="hover:text-indigo-600 transition-colors">Fonctionnement</a></li>
+              <li><a href="#pricing" class="hover:text-indigo-600 transition-colors">{{ $t('home.nav_pricing') }}</a></li>
+              <li><a href="#faq" class="hover:text-indigo-600 transition-colors">{{ $t('home.nav_faq') }}</a></li>
+            </ul>
           </div>
-          <p class="text-zinc-300 text-xs">© 2026 Recuro Technologies Inc.</p>
+
+          <div>
+            <h4 class="font-bold mb-6 text-zinc-800">{{ $t('home.footer_legal') }}</h4>
+            <ul class="space-y-4 text-sm text-zinc-500">
+              <li><a href="#" class="hover:text-indigo-600 transition-colors">{{ $t('home.footer_terms') }}</a></li>
+              <li><a href="#" class="hover:text-indigo-600 transition-colors">{{ $t('home.footer_privacy') }}</a></li>
+              <li><a href="#" class="hover:text-indigo-600 transition-colors">{{ $t('home.footer_mentions') }}</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-6 text-zinc-800">{{ $t('home.nav_contact') }}</h4>
+            <ul class="space-y-4 text-sm text-zinc-500">
+              <li class="flex items-start gap-3">
+                <span class="font-medium text-zinc-700">Email:</span>
+                <a href="mailto:hello@recuro.co" class="hover:text-indigo-600 transition-colors">hello@recuro.co</a>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="font-medium text-zinc-700">Bureaux:</span>
+                <span>123 Avenue de l'Innovation<br/>75001 Paris, France</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="pt-8 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p class="text-zinc-400 text-sm">© 2026 Recuro Technologies Inc. {{ $t('home.footer_rights') }}</p>
+          <div class="flex gap-4">
+            <a href="#" class="w-8 h-8 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all">
+               <span class="sr-only">Twitter</span>
+               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/></svg>
+            </a>
+            <a href="#" class="w-8 h-8 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all">
+               <span class="sr-only">GitHub</span>
+               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/></svg>
+            </a>
+          </div>
         </div>
       </div>
     </footer>

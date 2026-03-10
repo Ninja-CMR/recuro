@@ -3,6 +3,7 @@ import * as yup from 'yup'
 
 interface InvoiceFormValues {
     clientId: string
+    currency: string
     issueDate: any
     dueDate: any
     items: {
@@ -15,6 +16,7 @@ interface InvoiceFormValues {
 export function useInvoiceValidation() {
     const schema = yup.object({
         clientId: yup.string().required('Le client est requis'),
+        currency: yup.string().required('La devise est requise'),
         issueDate: yup.date().required('La date est requise'),
         dueDate: yup.date().required('La date d\'échéance est requise'),
         items: yup.array().of(
@@ -30,6 +32,7 @@ export function useInvoiceValidation() {
         validationSchema: schema,
         initialValues: {
             clientId: '',
+            currency: 'EUR', // Default currency
             issueDate: new Date().toISOString().split('T')[0] as any,
             dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] as any,
             items: [
@@ -39,6 +42,7 @@ export function useInvoiceValidation() {
     })
 
     const [clientId, clientIdProps] = defineField('clientId')
+    const [currency, currencyProps] = defineField('currency')
     const [issueDate, issueDateProps] = defineField('issueDate')
     const [dueDate, dueDateProps] = defineField('dueDate')
 
@@ -49,6 +53,8 @@ export function useInvoiceValidation() {
         values,
         clientId,
         clientIdProps,
+        currency,
+        currencyProps,
         issueDate,
         issueDateProps,
         dueDate,

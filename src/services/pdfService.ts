@@ -1,15 +1,23 @@
 import type { Invoice, InvoiceItem } from '@/types'
 
-export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[] }, profile?: any) => {
+export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[], currency?: string }, profile?: any) => {
   const printWindow = window.open('', '_blank')
   if (!printWindow) return alert('Pop-up bloqué')
 
-  const itemsHtml = invoice.invoice_items ? invoice.invoice_items.map(item => `
+  const currencyMap: Record<string, string> = {
+    'EUR': '€',
+    'USD': '$',
+    'XOF': 'FCFA',
+    'JPY': '¥'
+  }
+  const symbol = currencyMap[invoice.currency || 'EUR'] || '€'
+
+  const itemsHtml = invoice.invoice_items && invoice.invoice_items.length > 0 ? invoice.invoice_items.map(item => `
     <tr>
       <td>${item.description}</td>
       <td style="text-align: center;">${item.quantity}</td>
-      <td style="text-align: right;">${item.unit_price} €</td>
-      <td style="text-align: right;">${(item.quantity * item.unit_price).toFixed(2)} €</td>
+      <td style="text-align: right;">${item.unit_price} ${symbol}</td>
+      <td style="text-align: right;">${(item.quantity * item.unit_price).toFixed(2)} ${symbol}</td>
     </tr>
   `).join('') : `
     <tr>
@@ -22,7 +30,27 @@ export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[] }
       <head>
         <title>Facture ${invoice.id}</title>
         <style>
-          body { font-family: sans-serif; padding: 40px; color: #333; line-height: 1.5; }
+          body { 
+            font-family: sans-serif; 
+            padding: 40px; 
+            color: #333; 
+            line-height: 1.5; 
+            position: relative;
+          }
+          /* Filigrane / Watermark */
+          body::before {
+            content: "RECURO";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 150px;
+            color: rgba(200, 200, 200, 0.15);
+            font-weight: 900;
+            z-index: -1;
+            pointer-events: none;
+            user-select: none;
+          }
           .header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
           h1 { margin: 0; color: #000; }
           .meta { text-align: right; }
@@ -42,8 +70,8 @@ export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[] }
             <p style="margin: 5px 0 0 0; color: #666;">Facture #${invoice.id.slice(0, 8).toUpperCase()}</p>
           </div>
           <div class="meta">
-            <p><strong>Date:</strong> ${new Date(invoice.issue_date).toLocaleDateString('fr-FR')}</p>
-            <p><strong>Échéance:</strong> ${new Date(invoice.due_date).toLocaleDateString('fr-FR')}</p>
+            <p><strong>Date:</strong> ${new Date(invoice.issue_date).toLocaleDateString()}</p>
+            <p><strong>Échéance:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
           </div>
         </div>
         
@@ -79,11 +107,11 @@ export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[] }
         </table>
 
         <div class="total">
-          Total: ${invoice.total_amount.toFixed(2)} €
+          Total: ${invoice.total_amount.toFixed(2)} ${symbol}
         </div>
 
         <div class="footer">
-          Généré avec RECURO - www.recuro.app
+          Généré gratuitement par RECURO - Découvrez l'application de facturation sans friction.
         </div>
 
         <script>

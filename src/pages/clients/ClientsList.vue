@@ -5,11 +5,14 @@ import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Input from '@/components/ui/Input.vue'
 import { Plus, Trash2, Pencil } from 'lucide-vue-next'
+import { watch } from 'vue'
 
 import { useClientValidation } from '@/composables/useClientValidation'
 import type { Client } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 const clientStore = useClientStore()
+const { t } = useI18n()
 const showCreateForm = ref(false)
 const editingClientId = ref<string | null>(null)
 
@@ -18,12 +21,24 @@ const {
   name, nameProps,
   email, emailProps,
   address, addressProps, 
-  phone, phoneProps,
+  phone,
   preferred_method, preferredMethodProps,
   handleSubmit, 
   resetForm,
   setValues
 } = useClientValidation()
+
+const phonePrefix = ref('+33')
+const rawPhone = ref('')
+
+watch([phonePrefix, rawPhone], () => {
+    if (rawPhone.value) {
+        const cleanPhone = rawPhone.value.replace(/\s+/g, '').replace(/^0+/, '')
+        phone.value = `${phonePrefix.value}${cleanPhone}`
+    } else {
+        phone.value = ''
+    }
+})
 
 const notification = ref<{ type: 'success' | 'error', message: string } | null>(null)
 
@@ -41,11 +56,27 @@ onMounted(() => {
 const startCreate = () => {
     editingClientId.value = null
     resetForm()
+    phonePrefix.value = '+33'
+    rawPhone.value = ''
     showCreateForm.value = true
 }
 
 const startEdit = (client: any) => {
     editingClientId.value = client.id
+    
+    let p = client.phone || ''
+    const knownPrefixes = ['+33', '+1', '+44', '+81', '+237', '+225', '+241', '+242', '+243', '+221', '+228', '+229', '+212', '+213', '+216']
+    let foundPrefix = '+33'
+    for (const prefix of knownPrefixes) {
+        if (p.startsWith(prefix)) {
+            foundPrefix = prefix
+            p = p.slice(prefix.length)
+            break
+        }
+    }
+    phonePrefix.value = foundPrefix
+    rawPhone.value = p
+
     setValues({
       name: client.name,
       email: client.email || '',
@@ -69,19 +100,19 @@ const onFormSubmit = handleSubmit(async (values) => {
     showCreateForm.value = false
     resetForm()
     editingClientId.value = null
-    setNotification('success', `Client ${isEditing ? 'mis à jour' : 'créé'} avec succès !`)
+    setNotification('success', isEditing ? t('clients.success_updated') : t('clients.success_created'))
   } else {
-    setNotification('error', `Erreur: ${error.message || 'Une erreur est survenue'}`)
+    setNotification('error', t('clients.err_save_failed', { msg: error.message || t('auth.err_general') }))
   }
 })
 
 const handleDelete = async (id: string) => {
-    if (confirm('Voulez-vous vraiment supprimer ce client ?')) {
+    if (confirm(t('clients.confirm_delete'))) {
         const { error } = await clientStore.deleteClient(id)
         if (!error) {
-          setNotification('success', 'Client supprimé avec succès')
+          setNotification('success', t('clients.success_deleted'))
         } else {
-          setNotification('error', `Erreur lors de la suppression: ${error.message}`)
+          setNotification('error', t('clients.err_delete_failed', { msg: error.message }))
         }
     }
 }
@@ -90,10 +121,10 @@ const handleDelete = async (id: string) => {
 <template>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold tracking-tight">Clients</h1>
+      <h1 class="text-3xl font-bold tracking-tight">{{ t('clients.title') }}</h1>
       <Button @click="startCreate" v-if="!showCreateForm">
         <Plus class="w-4 h-4 mr-2" />
-        Nouveau Client
+        {{ t('clients.btn_new') }}
       </Button>
     </div>
 
@@ -107,17 +138,39 @@ const handleDelete = async (id: string) => {
 
     <!-- Create/Edit Client Form -->
     <Card v-if="showCreateForm" class="p-6 bg-muted/30 border-dashed">
-      <h3 class="font-medium mb-4">{{ editingClientId ? 'Modifier le client' : 'Ajouter un client' }}</h3>
+      <h3 class="font-medium mb-4">{{ editingClientId ? t('clients.form_title_edit') : t('clients.form_title_add') }}</h3>
       <form @submit="onFormSubmit" class="space-y-4">
         <div class="grid gap-4 md:grid-cols-2">
-          <Input v-model="name" v-bind="nameProps" label="Nom" placeholder="Entreprise XYZ" :error="errors.name" />
-          <Input v-model="email" v-bind="emailProps" label="Email" type="email" placeholder="contact@xyz.com" :error="errors.email" />
+          <Input v-model="name" v-bind="nameProps" :label="t('clients.lbl_name')" :placeholder="t('clients.ph_name')" :error="errors.name" />
+          <Input v-model="email" v-bind="emailProps" :label="t('clients.lbl_email')" type="email" :placeholder="t('clients.ph_email')" :error="errors.email" />
         </div>
-        <Input v-model="address" v-bind="addressProps" label="Adresse" placeholder="123 Rue de la Paix" :error="errors.address" />
+        <Input v-model="address" v-bind="addressProps" :label="t('clients.lbl_address')" :placeholder="t('clients.ph_address')" :error="errors.address" />
         <div class="grid gap-4 md:grid-cols-2">
-          <Input v-model="phone" v-bind="phoneProps" label="Téléphone" placeholder="+33 6 12 34 56 78" :error="errors.phone" />
           <div class="space-y-2">
-            <label class="text-sm font-medium leading-none">Méthode d'envoi préférée</label>
+             <label class="text-sm font-medium leading-none">{{ t('clients.lbl_phone') }}</label>
+             <div class="flex gap-2">
+               <select v-model="phonePrefix" class="w-32 h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                 <option value="+33">🇫🇷 +33</option>
+                 <option value="+1">🇺🇸/🇨🇦 +1</option>
+                 <option value="+44">🇬🇧 +44</option>
+                 <option value="+81">🇯🇵 +81</option>
+                 <option value="+237">🇨🇲 +237</option>
+                 <option value="+225">🇨🇮 +225</option>
+                 <option value="+241">🇬🇦 +241</option>
+                 <option value="+242">🇨🇬 +242</option>
+                 <option value="+243">🇨🇩 +243</option>
+                 <option value="+221">🇸🇳 +221</option>
+                 <option value="+228">🇹🇬 +228</option>
+                 <option value="+229">🇧🇯 +229</option>
+                 <option value="+212">🇲🇦 +212</option>
+                 <option value="+213">🇩🇿 +213</option>
+                 <option value="+216">🇹🇳 +216</option>
+               </select>
+               <Input v-model="rawPhone" :placeholder="t('clients.ph_phone')" class="flex-1" :error="errors.phone" />
+             </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium leading-none">{{ t('clients.lbl_method') }}</label>
             <select v-model="preferred_method" v-bind="preferredMethodProps" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
               <option value="email">Email</option>
               <option value="whatsapp">WhatsApp Business</option>
@@ -126,9 +179,9 @@ const handleDelete = async (id: string) => {
           </div>
         </div>
         <div class="flex justify-end gap-2">
-          <Button type="button" variant="ghost" @click="showCreateForm = false">Annuler</Button>
+          <Button type="button" variant="ghost" @click="showCreateForm = false">{{ t('clients.btn_cancel') }}</Button>
           <Button type="submit" :disabled="clientStore.loading">
-              {{ editingClientId ? 'Mettre à jour' : 'Créer' }}
+              {{ editingClientId ? t('clients.btn_update') : t('clients.btn_create') }}
           </Button>
         </div>
       </form>
@@ -136,12 +189,12 @@ const handleDelete = async (id: string) => {
 
     <!-- Client List -->
     <div v-if="clientStore.loading && clientStore.clients.length === 0" class="text-center py-10 text-muted-foreground">
-      Chargement...
+      {{ t('clients.loading') }}
     </div>
 
     <div v-else-if="clientStore.clients.length === 0" class="rounded-md border p-12 text-center text-muted-foreground">
-      <p class="mb-2">Aucun client pour le moment.</p>
-      <p class="text-sm">Créez votre premier client pour commencer à facturer.</p>
+      <p class="mb-2">{{ t('clients.empty_title') }}</p>
+      <p class="text-sm">{{ t('clients.empty_desc') }}</p>
     </div>
 
     <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

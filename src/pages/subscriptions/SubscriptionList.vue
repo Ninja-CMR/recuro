@@ -5,8 +5,10 @@ import { useSubscriptionStore } from '@/stores/subscription'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import { Repeat, Plus, Edit, Trash2 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 const subscriptionStore = useSubscriptionStore()
 
 onMounted(() => {
@@ -19,9 +21,9 @@ const formatDate = (dateStr: string) => {
 }
 
 const handleDelete = async (id: string) => {
-  if (confirm('Voulez-vous vraiment supprimer cet abonnement ?')) {
+  if (confirm(t('subscriptions.confirm_delete'))) {
     const { error } = await subscriptionStore.deleteSubscription(id)
-    if (error) alert('Erreur: ' + error)
+    if (error) alert(t('subscriptions.err_delete', { msg: error }))
   }
 }
 </script>
@@ -29,15 +31,15 @@ const handleDelete = async (id: string) => {
 <template>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold tracking-tight">Abonnements Clients</h1>
+      <h1 class="text-3xl font-bold tracking-tight">{{ t('subscriptions.title') }}</h1>
       <Button @click="router.push('/subscriptions/new')">
         <Plus class="w-4 h-4 mr-2" />
-        Nouvel Abonnement
+        {{ t('subscriptions.btn_new') }}
       </Button>
     </div>
 
     <div v-if="subscriptionStore.loading && subscriptionStore.subscriptions.length === 0" class="text-center py-12">
-      <p class="text-muted-foreground">Chargement des abonnements...</p>
+      <p class="text-muted-foreground">{{ t('subscriptions.loading') }}</p>
     </div>
 
     <!-- Empty State -->
@@ -47,9 +49,9 @@ const handleDelete = async (id: string) => {
             <Repeat class="w-6 h-6" />
         </div>
       </div>
-      <h3 class="text-lg font-medium mb-2">Automatisez votre facturation</h3>
-      <p class="max-w-sm mx-auto mb-6">Créez des abonnements pour vos clients et laissez Recuro générer les factures automatiquement chaque mois.</p>
-      <Button variant="outline" @click="router.push('/subscriptions/new')">Créer votre premier abonnement</Button>
+      <h3 class="text-lg font-medium mb-2">{{ t('subscriptions.empty_title') }}</h3>
+      <p class="max-w-sm mx-auto mb-6">{{ t('subscriptions.empty_desc') }}</p>
+      <Button variant="outline" @click="router.push('/subscriptions/new')">{{ t('subscriptions.btn_create_first') }}</Button>
     </div>
     
     <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -64,17 +66,17 @@ const handleDelete = async (id: string) => {
             </div>
             <div class="flex justify-between items-start mb-2">
                 <h3 class="font-bold text-lg pr-16">{{ sub.name }}</h3>
-                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">Actif</span>
+                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">{{ t('subscriptions.status_active') }}</span>
             </div>
-            <p class="text-sm text-muted-foreground mb-4">Client: {{ sub.client?.name || 'Inconnu' }}</p>
+            <p class="text-sm text-muted-foreground mb-4">{{ t('subscriptions.lbl_client') }}: {{ sub.client?.name || t('subscriptions.client_unknown') }}</p>
             <div class="flex justify-between items-end border-t pt-4">
                 <div>
-                  <p class="text-xs text-muted-foreground uppercase font-bold tracking-wider">Prochaine facture</p>
+                  <p class="text-xs text-muted-foreground uppercase font-bold tracking-wider">{{ t('subscriptions.next_invoice') }}</p>
                   <p class="text-sm font-medium">{{ formatDate(sub.start_date) }}</p>
                 </div>
                 <div class="text-right">
                   <p class="font-bold text-xl text-primary">{{ sub.amount.toFixed(2) }} {{ sub.currency }}</p>
-                  <p class="text-xs text-muted-foreground">/ {{ sub.frequency === 'monthly' ? 'mois' : sub.frequency }}</p>
+                  <p class="text-xs text-muted-foreground">/ {{ sub.frequency === 'monthly' ? t('subscriptions.freq_monthly') : sub.frequency }}</p>
                 </div>
             </div>
         </Card>

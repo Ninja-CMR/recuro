@@ -8,7 +8,7 @@ const props = defineProps<{
   as?: string
 }>()
 
-const baseClass = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background"
+const baseClass = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:-translate-y-0.5 hover:shadow-md active:scale-95"
 
 const variantClass = computed(() => {
   switch (props.variant) {

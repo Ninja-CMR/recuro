@@ -8,9 +8,11 @@ import Card from '@/components/ui/Card.vue'
 import { FileDown, Edit, ArrowLeft, Send, CheckCircle } from 'lucide-vue-next'
 import { generatePdf } from '@/services/pdfService'
 import { useSendInvoice } from '@/composables/useSendInvoice'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const invoiceStore = useInvoiceStore()
 const authStore = useAuthStore()
 const invoice = ref<any>(null)
@@ -22,7 +24,7 @@ onMounted(async () => {
   const id = route.params.id as string
   const { data, error } = await invoiceStore.fetchInvoiceById(id)
   if (error) {
-    alert('Erreur lors du chargement de la facture')
+    alert(t('invoice_detail.err_load'))
     router.push('/invoices')
     return
   }
@@ -54,14 +56,10 @@ const getStatusBadgeClass = (status: string) => {
 
 const getStatusLabel = (status: string) => {
   switch (status) {
-    case 'paid':
-      return 'Payée'
-    case 'sent':
-      return 'Envoyée'
-    case 'overdue':
-      return 'En retard'
-    default:
-      return 'Brouillon'
+    case 'paid':    return t('invoice_detail.status_paid')
+    case 'sent':    return t('invoice_detail.status_sent')
+    case 'overdue': return t('invoice_detail.status_overdue')
+    default:        return t('invoice_detail.status_draft')
   }
 }
 
@@ -77,7 +75,7 @@ const handleMarkAsPaid = async () => {
   if (!error && data) {
     invoice.value.status = 'paid'
   } else {
-    alert('Erreur: ' + error)
+    alert(t('invoice_detail.err_send', { msg: error }))
   }
 }
 
@@ -88,14 +86,14 @@ const handleSendInvoice = async () => {
   try {
     const result = await sendInvoice(invoice.value)
     if (result.success && !result.manual) {
-      alert('Facture envoyée avec succès !')
+      alert(t('invoice_detail.success_send'))
     }
     // Update local status if it was sent
     if (invoice.value.status === 'draft') {
       invoice.value.status = 'sent'
     }
   } catch (err: any) {
-    alert('Erreur: ' + err.message)
+    alert(t('invoice_detail.err_send', { msg: err.message }))
   } finally {
     sendingEmail.value = false
   }
@@ -107,22 +105,22 @@ const handleSendInvoice = async () => {
     <div class="flex items-center justify-between">
       <Button variant="ghost" @click="router.push('/invoices')" class="-ml-2">
         <ArrowLeft class="w-4 h-4 mr-2" />
-        Retour aux factures
+        {{ t('invoice_detail.btn_back') }}
       </Button>
       <div class="flex gap-2">
         <Button variant="outline" @click="router.push(`/invoices/${invoice?.id}/edit`)">
           <Edit class="w-4 h-4 mr-2" />
-          Modifier
+          {{ t('invoice_detail.btn_edit') }}
         </Button>
         <Button @click="handleDownloadPdf">
           <FileDown class="w-4 h-4 mr-2" />
-          PDF
+          {{ t('invoice_detail.btn_pdf') }}
         </Button>
       </div>
     </div>
 
     <div v-if="loading" class="flex justify-center py-12">
-      <p class="text-muted-foreground">Chargement...</p>
+      <p class="text-muted-foreground">{{ t('invoice_detail.loading') }}</p>
     </div>
 
     <template v-else-if="invoice">
@@ -130,7 +128,7 @@ const handleSendInvoice = async () => {
         <!-- Status & Actions -->
         <Card class="p-6 space-y-6 h-fit">
           <div>
-            <h3 class="text-sm font-medium text-muted-foreground mb-2">Statut</h3>
+            <h3 class="text-sm font-medium text-muted-foreground mb-2">{{ t('invoice_detail.lbl_status') }}</h3>
             <span :class="['px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusBadgeClass(invoice.status)]">
               {{ getStatusLabel(invoice.status) }}
             </span>
@@ -139,11 +137,11 @@ const handleSendInvoice = async () => {
           <div class="pt-4 border-t space-y-2">
             <Button v-if="invoice.status !== 'paid'" class="w-full justify-start" variant="outline" @click="handleMarkAsPaid">
               <CheckCircle class="w-4 h-4 mr-2" />
-              Marquer comme payée
+              {{ t('invoice_detail.btn_mark_paid') }}
             </Button>
             <Button class="w-full justify-start" variant="outline" @click="handleSendInvoice" :disabled="sendingEmail">
               <Send class="w-4 h-4 mr-2" />
-              {{ sendingEmail ? 'Envoi...' : 'Renvoyer au client' }}
+              {{ sendingEmail ? t('invoice_detail.btn_sending') : t('invoice_detail.btn_send') }}
             </Button>
           </div>
         </Card>
@@ -152,8 +150,8 @@ const handleSendInvoice = async () => {
         <Card class="md:col-span-2 p-8 space-y-8">
           <div class="flex justify-between items-start">
             <div>
-              <h1 class="text-2xl font-bold">Facture #{{ invoice.id.split('-')[0].toUpperCase() }}</h1>
-              <p class="text-muted-foreground">Émise le {{ formatDate(invoice.issue_date) }}</p>
+              <h1 class="text-2xl font-bold">{{ t('invoice_detail.title', { id: invoice.id.split('-')[0].toUpperCase() }) }}</h1>
+              <p class="text-muted-foreground">{{ t('invoice_detail.issued_on', { date: formatDate(invoice.issue_date) }) }}</p>
             </div>
             <div class="text-right">
               <div class="text-xl font-black text-primary">{{ authStore.userProfile?.company_name || 'RECURO' }}</div>
@@ -162,13 +160,13 @@ const handleSendInvoice = async () => {
 
           <div class="grid grid-cols-2 gap-8 py-8 border-y">
             <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">De</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">{{ t('invoice_detail.lbl_from') }}</h3>
               <p class="font-semibold">{{ authStore.userProfile?.full_name || authStore.userProfile?.company_name || 'Votre Entreprise' }}</p>
               <p v-if="authStore.userProfile?.company_name && authStore.userProfile?.full_name" class="text-sm font-medium">{{ authStore.userProfile?.company_name }}</p>
               <p class="text-sm text-muted-foreground">{{ authStore.userProfile?.email || 'contact@votreentreprise.com' }}</p>
             </div>
             <div class="text-right">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">À</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">{{ t('invoice_detail.lbl_to') }}</h3>
               <p class="font-semibold">{{ invoice.client?.name }}</p>
               <p class="text-sm text-muted-foreground">{{ invoice.client?.email }}</p>
             </div>
@@ -178,10 +176,10 @@ const handleSendInvoice = async () => {
             <table class="w-full">
               <thead>
                 <tr class="text-left text-xs font-bold uppercase tracking-wider text-muted-foreground border-b">
-                  <th class="pb-3 text-left">Description</th>
-                  <th class="pb-3 text-center w-20">Qté</th>
-                  <th class="pb-3 text-right w-32">Prix Unitaire</th>
-                  <th class="pb-3 text-right w-32">Total</th>
+                  <th class="pb-3 text-left">{{ t('invoice_detail.col_desc') }}</th>
+                  <th class="pb-3 text-center w-20">{{ t('invoice_detail.col_qty') }}</th>
+                  <th class="pb-3 text-right w-32">{{ t('invoice_detail.col_price') }}</th>
+                  <th class="pb-3 text-right w-32">{{ t('invoice_detail.col_total') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y">
@@ -198,23 +196,23 @@ const handleSendInvoice = async () => {
           <div class="flex justify-end pt-4">
             <div class="w-64 space-y-2">
               <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">Sous-total</span>
+                <span class="text-muted-foreground">{{ t('invoice_detail.lbl_subtotal') }}</span>
                 <span>{{ invoice.total_amount.toFixed(2) }} €</span>
               </div>
               <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">TVA (0%)</span>
+                <span class="text-muted-foreground">{{ t('invoice_detail.lbl_tax') }}</span>
                 <span>0.00 €</span>
               </div>
               <div class="flex justify-between border-t pt-2 text-lg font-bold">
-                <span>Total</span>
+                <span>{{ t('invoice_detail.lbl_total') }}</span>
                 <span class="text-primary">{{ invoice.total_amount.toFixed(2) }} €</span>
               </div>
             </div>
           </div>
 
           <div class="pt-8 text-xs text-muted-foreground border-t">
-            <p>Date d'échéance : {{ formatDate(invoice.due_date) }}</p>
-            <p class="mt-2">Merci pour votre confiance. En cas de question, n'hésitez pas à nous contacter.</p>
+            <p>{{ t('invoice_detail.due_date', { date: formatDate(invoice.due_date) }) }}</p>
+            <p class="mt-2">{{ t('invoice_detail.footer_msg') }}</p>
           </div>
         </Card>
       </div>
