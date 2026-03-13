@@ -61,10 +61,14 @@ SELECT id FROM auth.users
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. Ensure other necessary tables exist
+ALTER TABLE IF EXISTS public.invoices 
+ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'EUR';
+
 CREATE TABLE IF NOT EXISTS public.invoices (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users ON DELETE CASCADE,
     client_id UUID REFERENCES public.clients ON DELETE CASCADE,
+    currency TEXT DEFAULT 'EUR',
     status TEXT DEFAULT 'draft',
     issue_date DATE DEFAULT CURRENT_DATE,
     due_date DATE,

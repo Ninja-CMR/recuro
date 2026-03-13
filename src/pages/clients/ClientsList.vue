@@ -198,18 +198,28 @@ const handleDelete = async (id: string) => {
     </div>
 
     <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <Card v-for="client in clientStore.clients" :key="client.id" class="p-6 hover:shadow-md transition-shadow group relative">
-        <div class="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button variant="ghost" size="icon" class="h-8 w-8 text-muted-foreground hover:text-foreground" @click.stop="startEdit(client)">
-                <Pencil class="w-3 h-3" />
-            </Button>
-            <Button variant="ghost" size="icon" class="h-8 w-8 text-destructive hover:text-red-600 hover:bg-red-50" @click.stop="handleDelete(client.id)">
-                <Trash2 class="w-3 h-3" />
-            </Button>
-        </div>
-        
+      <Card v-for="client in clientStore.clients" :key="client.id" class="p-6 hover:shadow-md transition-shadow group">
         <div class="flex justify-between items-start mb-2">
           <h3 class="font-bold text-lg">{{ client.name }}</h3>
+          <!-- Actions -->
+          <div class="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              class="h-8 w-8 text-muted-foreground hover:text-foreground"
+              @click.stop="startEdit(client)"
+            >
+              <Pencil class="w-3 h-3" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              class="h-8 w-8 text-destructive hover:text-red-600 hover:bg-red-50"
+              @click.stop="handleDelete(client.id)"
+            >
+              <Trash2 class="w-3 h-3" />
+            </Button>
+          </div>
         </div>
         <div class="space-y-1 text-sm text-muted-foreground">
           <p v-if="client.email">{{ client.email }}</p>

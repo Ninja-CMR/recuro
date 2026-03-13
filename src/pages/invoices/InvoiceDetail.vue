@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted , computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useInvoiceStore } from '@/stores/invoice'
 import { useAuthStore } from '@/stores/auth'
@@ -62,6 +62,17 @@ const getStatusLabel = (status: string) => {
     default:        return t('invoice_detail.status_draft')
   }
 }
+
+const currentSymbol = computed(() => {
+  const currencies = [
+    { value: 'EUR', symbol: '€' },
+    { value: 'USD', symbol: '$' },
+    { value: 'XOF', symbol: 'FCFA' },
+    { value: 'JPY', symbol: '¥' }
+  ]
+  const cur = currencies.find(c => c.value === invoice.value?.currency)
+  return cur ? cur.symbol : '€'
+})
 
 const handleDownloadPdf = () => {
   if (invoice.value) {
@@ -186,8 +197,8 @@ const handleSendInvoice = async () => {
                 <tr v-for="item in invoice.invoice_items" :key="item.id">
                   <td class="py-4 text-sm">{{ item.description }}</td>
                   <td class="py-4 text-sm text-center">{{ item.quantity }}</td>
-                  <td class="py-4 text-sm text-right">{{ item.unit_price.toFixed(2) }} €</td>
-                  <td class="py-4 text-sm text-right font-medium">{{ (item.quantity * item.unit_price).toFixed(2) }} €</td>
+                  <td class="py-4 text-sm text-right">{{ item.unit_price.toFixed(2) }} {{ currentSymbol }}</td>
+                  <td class="py-4 text-sm text-right font-medium">{{ (item.quantity * item.unit_price).toFixed(2) }} {{ currentSymbol }}</td>
                 </tr>
               </tbody>
             </table>
@@ -197,15 +208,15 @@ const handleSendInvoice = async () => {
             <div class="w-64 space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-muted-foreground">{{ t('invoice_detail.lbl_subtotal') }}</span>
-                <span>{{ invoice.total_amount.toFixed(2) }} €</span>
+                <span>{{ invoice.total_amount.toFixed(2) }} {{ currentSymbol }}</span>
               </div>
               <div class="flex justify-between text-sm">
                 <span class="text-muted-foreground">{{ t('invoice_detail.lbl_tax') }}</span>
-                <span>0.00 €</span>
+                <span>0.00 {{ currentSymbol }}</span>
               </div>
               <div class="flex justify-between border-t pt-2 text-lg font-bold">
                 <span>{{ t('invoice_detail.lbl_total') }}</span>
-                <span class="text-primary">{{ invoice.total_amount.toFixed(2) }} €</span>
+                <span class="text-primary">{{ invoice.total_amount.toFixed(2) }} {{ currentSymbol }}</span>
               </div>
             </div>
           </div>
