@@ -23,5 +23,6 @@ import AppHeader from '@/components/layout/AppHeader.vue'
 
     <!-- Mobile Navigation -->
     <MobileNav />
+    </div>
   </div>
 </template>
