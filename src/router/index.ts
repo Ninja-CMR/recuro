@@ -22,6 +22,11 @@ const router = createRouter({
                     path: 'register',
                     name: 'register',
                     component: () => import('@/pages/auth/Register.vue')
+                },
+                {
+                    path: 'p/invoice/:id',
+                    name: 'public-invoice',
+                    component: () => import('@/pages/public/PublicInvoiceDetail.vue')
                 }
             ]
         },

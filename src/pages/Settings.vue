@@ -43,13 +43,6 @@ onMounted(async () => {
         <Button variant="outline">{{ t('settings.btn_save') }}</Button>
       </Card>
 
-      <!-- Info Section -->
-      <Card class="p-6 bg-slate-50 border-slate-200">
-        <h2 class="text-xl font-semibold mb-2">{{ t('settings.test_period_title') }}</h2>
-        <p class="text-sm text-muted-foreground">
-          {{ t('settings.test_period_desc') }}
-        </p>
-      </Card>
     </div>
   </div>
 </template>

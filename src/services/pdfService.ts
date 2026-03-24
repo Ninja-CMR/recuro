@@ -37,20 +37,7 @@ export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[], 
             line-height: 1.5; 
             position: relative;
           }
-          /* Filigrane / Watermark */
-          body::before {
-            content: "RECURO";
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 150px;
-            color: rgba(200, 200, 200, 0.15);
-            font-weight: 900;
-            z-index: -1;
-            pointer-events: none;
-            user-select: none;
-          }
+
           .header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
           h1 { margin: 0; color: #000; }
           .meta { text-align: right; }
@@ -111,7 +98,7 @@ export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[], 
         </div>
 
         <div class="footer">
-          Généré gratuitement par RECURO - Découvrez l'application de facturation sans friction.
+          Merci pour votre confiance.
         </div>
 
         <script>

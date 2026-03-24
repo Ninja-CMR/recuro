@@ -5,7 +5,7 @@ import { useInvoiceStore } from '@/stores/invoice'
 import { useAuthStore } from '@/stores/auth'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
-import { FileDown, Edit, ArrowLeft, Send, CheckCircle } from 'lucide-vue-next'
+import { FileDown, Edit, ArrowLeft, Send, CheckCircle, ChevronDown, Smartphone, Mail, Copy } from 'lucide-vue-next'
 import { generatePdf } from '@/services/pdfService'
 import { useSendInvoice } from '@/composables/useSendInvoice'
 import { useI18n } from 'vue-i18n'
@@ -109,6 +109,32 @@ const handleSendInvoice = async () => {
     sendingEmail.value = false
   }
 }
+
+const publicUrl = computed(() => {
+  if (!invoice.value) return ''
+  const baseUrl = window.location.origin
+  return `${baseUrl}/p/invoice/${invoice.value.id}`
+})
+
+const shareViaWhatsApp = () => {
+  const text = encodeURIComponent(t('invoice_detail.share_msg', { url: publicUrl.value }))
+  window.open(`https://wa.me/?text=${text}`, '_blank')
+}
+
+const shareViaEmail = () => {
+  const subject = encodeURIComponent(`Facture #${invoice.value.id.slice(0, 8).toUpperCase()}`)
+  const body = encodeURIComponent(t('invoice_detail.share_msg', { url: publicUrl.value }))
+  window.location.href = `mailto:?subject=${subject}&body=${body}`
+}
+
+const copyShareLink = async () => {
+  try {
+    await navigator.clipboard.writeText(publicUrl.value)
+    alert(t('invoice_detail.share_copied'))
+  } catch (err) {
+    console.error('Failed to copy link:', err)
+  }
+}
 </script>
 
 <template>
@@ -123,10 +149,36 @@ const handleSendInvoice = async () => {
           <Edit class="w-4 h-4 mr-2" />
           {{ t('invoice_detail.btn_edit') }}
         </Button>
-        <Button @click="handleDownloadPdf">
+        <Button variant="outline" @click="handleDownloadPdf">
           <FileDown class="w-4 h-4 mr-2" />
           {{ t('invoice_detail.btn_pdf') }}
         </Button>
+        
+        <!-- Share Dropdown -->
+        <div class="relative group">
+          <Button>
+            <Send class="w-4 h-4 mr-2" />
+            {{ t('invoice_detail.btn_share') }}
+            <ChevronDown class="w-4 h-4 ml-2" />
+          </Button>
+          
+          <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+            <div class="p-1">
+              <button @click="shareViaWhatsApp" class="flex items-center w-full px-3 py-2 text-sm hover:bg-muted rounded-md tracking-tight">
+                <Smartphone class="w-4 h-4 mr-2 text-green-600" />
+                {{ t('invoice_detail.share_whatsapp') }}
+              </button>
+              <button @click="shareViaEmail" class="flex items-center w-full px-3 py-2 text-sm hover:bg-muted rounded-md tracking-tight">
+                <Mail class="w-4 h-4 mr-2 text-blue-600" />
+                {{ t('invoice_detail.share_email') }}
+              </button>
+              <button @click="copyShareLink" class="flex items-center w-full px-3 py-2 text-sm hover:bg-muted rounded-md tracking-tight border-t mt-1 pt-2">
+                <Copy class="w-4 h-4 mr-2 text-zinc-600" />
+                {{ t('invoice_detail.share_copy') }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

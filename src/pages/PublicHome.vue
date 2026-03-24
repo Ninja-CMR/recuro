@@ -509,7 +509,7 @@ const faqs = [
               </li>
               <li class="flex items-start gap-3">
                 <span class="font-medium text-zinc-700">Bureaux:</span>
-                <span>123 Avenue de l'Innovation<br/>75001 Paris, France</span>
+                <span>Douala Cameroun<br/>Ndogbon Socaver</span>
               </li>
             </ul>
           </div>
