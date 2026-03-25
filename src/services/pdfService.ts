@@ -5,19 +5,19 @@ export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[], 
   if (!printWindow) return alert('Pop-up bloqué')
 
   const currencyMap: Record<string, string> = {
+    'XAF': 'FCFA',
     'EUR': '€',
     'USD': '$',
-    'XOF': 'FCFA',
     'JPY': '¥'
   }
-  const symbol = currencyMap[invoice.currency || 'EUR'] || '€'
+  const symbol = currencyMap[invoice.currency || 'XAF'] || 'FCFA'
 
   const itemsHtml = invoice.invoice_items && invoice.invoice_items.length > 0 ? invoice.invoice_items.map(item => `
     <tr>
       <td>${item.description}</td>
       <td style="text-align: center;">${item.quantity}</td>
-      <td style="text-align: right;">${item.unit_price} ${symbol}</td>
-      <td style="text-align: right;">${(item.quantity * item.unit_price).toFixed(2)} ${symbol}</td>
+      <td style="text-align: right;">${Math.round(item.unit_price)} ${symbol}</td>
+      <td style="text-align: right;">${Math.round(item.quantity * item.unit_price)} ${symbol}</td>
     </tr>
   `).join('') : `
     <tr>
@@ -94,7 +94,7 @@ export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[], 
         </table>
 
         <div class="total">
-          Total: ${invoice.total_amount.toFixed(2)} ${symbol}
+          Total: ${Math.round(invoice.total_amount)} ${symbol}
         </div>
 
         <div class="footer">

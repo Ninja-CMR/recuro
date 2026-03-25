@@ -18,6 +18,7 @@ export interface Invoice {
     due_date: string
     total_amount: number
     created_at: string
+    currency?: string
     client?: Client // For joined queries
 }
 

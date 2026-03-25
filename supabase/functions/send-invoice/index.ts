@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
 import { Resend } from "npm:resend@2.0.0"
 
@@ -31,7 +32,7 @@ serve(async (req) => {
           <div style="margin-bottom: 30px;">
             <p style="font-size: 1.125rem; color: #1e293b;">Bonjour <strong>${invoice.client?.name || 'Client'}</strong>,</p>
             <p style="color: #475569; line-height: 1.6;">
-              Veuillez trouver ci-joint votre facture d'un montant de <strong>${invoice.total_amount.toFixed(2)} €</strong>.
+              Veuillez trouver ci-joint votre facture d'un montant de <strong>${Math.round(invoice.total_amount)} FCFA</strong>.
             </p>
           </div>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
@@ -47,14 +48,14 @@ serve(async (req) => {
                 <tr>
                   <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155;">${item.description}</td>
                   <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155; text-align: center;">${item.quantity}</td>
-                  <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155; text-align: right;">${(item.quantity * item.unit_price).toFixed(2)} €</td>
+                  <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155; text-align: right;">${Math.round(item.quantity * item.unit_price)} FCFA</td>
                 </tr>
               `).join('')}
             </tbody>
             <tfoot>
               <tr>
                 <td colspan="2" style="padding: 12px; text-align: right; font-weight: bold; color: #1e293b;">Total</td>
-                <td style="padding: 12px; text-align: right; font-weight: bold; color: #1e40af; font-size: 1.25rem;">${invoice.total_amount.toFixed(2)} €</td>
+                <td style="padding: 12px; text-align: right; font-weight: bold; color: #1e40af; font-size: 1.25rem;">${Math.round(invoice.total_amount)} FCFA</td>
               </tr>
             </tfoot>
           </table>

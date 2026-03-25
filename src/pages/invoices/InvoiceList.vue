@@ -79,7 +79,7 @@ const getClientName = (clientId: string, clientObj?: any) => {
         
         <div class="flex items-center gap-4">
             <div class="text-right">
-                <p class="font-bold">{{ invoice.total_amount }} €</p>
+                <p class="font-bold">{{ Math.round(invoice.total_amount) }} {{ invoice.currency === 'EUR' ? '€' : (invoice.currency === 'USD' ? '$' : 'FCFA') }}</p>
                 <Badge :variant="getStatusVariant(invoice.status)">{{ invoice.status }}</Badge>
             </div>
         </div>

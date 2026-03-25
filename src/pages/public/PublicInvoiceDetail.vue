@@ -59,12 +59,12 @@ const formatDate = (dateString: string) => {
 
 const currentSymbol = computed(() => {
   const currencies: Record<string, string> = {
+    'XAF': 'FCFA',
     'EUR': '€',
     'USD': '$',
-    'XOF': 'FCFA',
     'JPY': '¥'
   }
-  return currencies[invoice.value?.currency] || '€'
+  return currencies[invoice.value?.currency] || 'FCFA'
 })
 
 const handleDownloadPdf = () => {
@@ -154,8 +154,8 @@ const handleDownloadPdf = () => {
                 <tr v-for="item in invoice.invoice_items" :key="item.id">
                   <td class="py-6 font-medium">{{ item.description }}</td>
                   <td class="py-6 text-center text-zinc-500">{{ item.quantity }}</td>
-                  <td class="py-6 text-right text-zinc-500">{{ item.unit_price.toFixed(2) }} {{ currentSymbol }}</td>
-                  <td class="py-6 text-right font-bold">{{ (item.quantity * item.unit_price).toFixed(2) }} {{ currentSymbol }}</td>
+                  <td class="py-6 text-right text-zinc-500">{{ Math.round(item.unit_price) }} {{ currentSymbol }}</td>
+                  <td class="py-6 text-right font-bold">{{ Math.round(item.quantity * item.unit_price) }} {{ currentSymbol }}</td>
                 </tr>
               </tbody>
             </table>
@@ -166,15 +166,15 @@ const handleDownloadPdf = () => {
             <div class="w-full md:w-80 space-y-3">
               <div class="flex justify-between text-zinc-500">
                 <span>Sous-total</span>
-                <span>{{ invoice.total_amount.toFixed(2) }} {{ currentSymbol }}</span>
+                <span>{{ Math.round(invoice.total_amount) }} {{ currentSymbol }}</span>
               </div>
               <div class="flex justify-between text-zinc-500">
                 <span>TVA (0%)</span>
-                <span>0.00 {{ currentSymbol }}</span>
+                <span>0 {{ currentSymbol }}</span>
               </div>
               <div class="flex justify-between pt-4 border-t border-zinc-200 text-2xl font-black">
                 <span>Total</span>
-                <span class="text-primary">{{ invoice.total_amount.toFixed(2) }} {{ currentSymbol }}</span>
+                <span class="text-primary">{{ Math.round(invoice.total_amount) }} {{ currentSymbol }}</span>
               </div>
             </div>
           </div>

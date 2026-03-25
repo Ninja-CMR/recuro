@@ -66,13 +66,13 @@ const getStatusLabel = (status: string) => {
 
 const currentSymbol = computed(() => {
   const currencies = [
+    { value: 'XAF', symbol: 'FCFA' },
     { value: 'EUR', symbol: '€' },
     { value: 'USD', symbol: '$' },
-    { value: 'XOF', symbol: 'FCFA' },
     { value: 'JPY', symbol: '¥' }
   ]
   const cur = currencies.find(c => c.value === invoice.value?.currency)
-  return cur ? cur.symbol : '€'
+  return cur ? cur.symbol : 'FCFA'
 })
 
 const handleDownloadPdf = () => {
@@ -260,8 +260,8 @@ const copyShareLink = async () => {
                 <tr v-for="item in invoice.invoice_items" :key="item.id">
                   <td class="py-4 text-sm">{{ item.description }}</td>
                   <td class="py-4 text-sm text-center">{{ item.quantity }}</td>
-                  <td class="py-4 text-sm text-right">{{ item.unit_price.toFixed(2) }} {{ currentSymbol }}</td>
-                  <td class="py-4 text-sm text-right font-medium">{{ (item.quantity * item.unit_price).toFixed(2) }} {{ currentSymbol }}</td>
+                  <td class="py-4 text-sm text-right">{{ Math.round(item.unit_price) }} {{ currentSymbol }}</td>
+                  <td class="py-4 text-sm text-right font-medium">{{ Math.round(item.quantity * item.unit_price) }} {{ currentSymbol }}</td>
                 </tr>
               </tbody>
             </table>
@@ -271,15 +271,15 @@ const copyShareLink = async () => {
             <div class="w-64 space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-muted-foreground">{{ t('invoice_detail.lbl_subtotal') }}</span>
-                <span>{{ invoice.total_amount.toFixed(2) }} {{ currentSymbol }}</span>
+                <span>{{ Math.round(invoice.total_amount) }} {{ currentSymbol }}</span>
               </div>
               <div class="flex justify-between text-sm">
                 <span class="text-muted-foreground">{{ t('invoice_detail.lbl_tax') }}</span>
-                <span>0.00 {{ currentSymbol }}</span>
+                <span>0 {{ currentSymbol }}</span>
               </div>
               <div class="flex justify-between border-t pt-2 text-lg font-bold">
                 <span>{{ t('invoice_detail.lbl_total') }}</span>
-                <span class="text-primary">{{ invoice.total_amount.toFixed(2) }} {{ currentSymbol }}</span>
+                <span class="text-primary">{{ Math.round(invoice.total_amount) }} {{ currentSymbol }}</span>
               </div>
             </div>
           </div>

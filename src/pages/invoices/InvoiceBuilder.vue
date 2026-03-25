@@ -22,9 +22,9 @@ const invoiceId = computed(() => route.params.id as string | undefined)
 const isEditMode = computed(() => !!invoiceId.value)
 
 const currencies = [
+  { value: 'XAF', label: 'Franc CFA (FCFA)', symbol: 'FCFA' },
   { value: 'EUR', label: 'Euro (€)', symbol: '€' },
   { value: 'USD', label: 'Dollar US ($)', symbol: '$' },
-  { value: 'XOF', label: 'Franc CFA (FCFA)', symbol: 'FCFA' },
   { value: 'JPY', label: 'Yen Japonais (¥)', symbol: '¥' }
 ]
 
@@ -44,7 +44,7 @@ const {
 
 const currentSymbol = computed(() => {
   const cur = currencies.find(c => c.value === values.currency)
-  return cur ? cur.symbol : '€'
+  return cur ? cur.symbol : 'FCFA'
 })
 
 onMounted(async () => {
@@ -62,7 +62,7 @@ onMounted(async () => {
       currentInvoice.value = invoiceData
       setValues({
         clientId: invoiceData.client_id,
-        currency: invoiceData.currency || 'EUR',
+        currency: invoiceData.currency || 'XAF',
         issueDate: invoiceData.issue_date,
         dueDate: invoiceData.due_date,
         items: invoiceData.invoice_items || []
@@ -228,7 +228,7 @@ const handleDownloadPdf = () => {
 
             <div class="w-full sm:col-span-2 flex justify-between sm:justify-end items-center sm:pr-2">
               <span class="text-sm font-semibold text-zinc-500 sm:hidden">Montant :</span>
-              <span class="font-semibold text-zinc-800">{{ itemTotal(item).toFixed(4).replace(/\.?0+$/, '') }} {{ currentSymbol }}</span>
+              <span class="font-semibold text-zinc-800">{{ Math.round(itemTotal(item)) }} {{ currentSymbol }}</span>
             </div>
             
             <div class="hidden sm:flex absolute right-0 translate-x-12 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -246,7 +246,7 @@ const handleDownloadPdf = () => {
         <div class="border-t border-zinc-100 pt-6 flex flex-col sm:flex-row justify-between items-end gap-6 sm:mt-8">
             <div class="w-full sm:w-auto text-right bg-white p-6 sm:p-0 rounded-3xl border border-zinc-100 sm:border-none shadow-sm sm:shadow-none">
                 <span class="text-sm font-semibold text-zinc-500 uppercase tracking-widest">{{ $t('invoice.total') }}</span>
-                <p class="text-4xl font-black tracking-tight text-indigo-950 mt-1">{{ totalAmount.toFixed(2) }} <span class="text-2xl text-indigo-600/50">{{ currentSymbol }}</span></p>
+                <p class="text-4xl font-black tracking-tight text-indigo-950 mt-1">{{ Math.round(totalAmount) }} <span class="text-2xl text-indigo-600/50">{{ currentSymbol }}</span></p>
             </div>
             
             <div class="flex w-full sm:w-auto flex-col-reverse sm:flex-row gap-3">

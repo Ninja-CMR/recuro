@@ -143,6 +143,7 @@ const handleSave = handleSubmit(async (formValues) => {
             class="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             :class="{ 'border-destructive': errors.currency }"
           >
+            <option value="XAF">FCFA</option>
             <option value="EUR">EUR</option>
             <option value="USD">USD</option>
           </select>

@@ -39,7 +39,12 @@ const userName = computed(() => {
 })
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value)
+  return new Intl.NumberFormat('fr-FR', { 
+    style: 'currency', 
+    currency: 'XAF', 
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0 
+  }).format(value)
 }
 
 const recentInvoices = computed(() => {

@@ -75,7 +75,7 @@ const handleDelete = async (id: string) => {
                   <p class="text-sm font-medium">{{ formatDate(sub.start_date) }}</p>
                 </div>
                 <div class="text-right">
-                  <p class="font-bold text-xl text-primary">{{ sub.amount.toFixed(2) }} {{ sub.currency }}</p>
+                  <p class="font-bold text-xl text-primary">{{ Math.round(sub.amount) }} {{ sub.currency === 'XAF' ? 'FCFA' : sub.currency }}</p>
                   <p class="text-xs text-muted-foreground">/ {{ sub.frequency === 'monthly' ? t('subscriptions.freq_monthly') : sub.frequency }}</p>
                 </div>
             </div>
