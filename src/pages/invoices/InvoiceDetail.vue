@@ -19,6 +19,7 @@ const invoice = ref<any>(null)
 const loading = ref(true)
 const sendingEmail = ref(false)
 const { sendInvoice } = useSendInvoice()
+const isShareOpen = ref(false)
 
 onMounted(async () => {
   const id = route.params.id as string
@@ -138,13 +139,13 @@ const copyShareLink = async () => {
 </script>
 
 <template>
-  <div class="space-y-6 max-w-4xl mx-auto pb-12">
-    <div class="flex items-center justify-between">
+  <div class="space-y-6 max-w-4xl mx-auto pb-12 px-4 sm:px-0">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <Button variant="ghost" @click="router.push('/invoices')" class="-ml-2">
         <ArrowLeft class="w-4 h-4 mr-2" />
         {{ t('invoice_detail.btn_back') }}
       </Button>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <Button variant="outline" @click="router.push(`/invoices/${invoice?.id}/edit`)">
           <Edit class="w-4 h-4 mr-2" />
           {{ t('invoice_detail.btn_edit') }}
@@ -155,29 +156,39 @@ const copyShareLink = async () => {
         </Button>
         
         <!-- Share Dropdown -->
-        <div class="relative group">
-          <Button>
+        <div class="relative">
+          <Button @click="isShareOpen = !isShareOpen">
             <Send class="w-4 h-4 mr-2" />
             {{ t('invoice_detail.btn_share') }}
             <ChevronDown class="w-4 h-4 ml-2" />
           </Button>
           
-          <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-            <div class="p-1">
-              <button @click="shareViaWhatsApp" class="flex items-center w-full px-3 py-2 text-sm hover:bg-muted rounded-md tracking-tight">
-                <Smartphone class="w-4 h-4 mr-2 text-green-600" />
+          <div v-if="isShareOpen" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-zinc-100 p-2 z-50 animate-in fade-in zoom-in duration-200">
+            <div class="flex flex-col gap-1">
+              <button @click="shareViaWhatsApp(); isShareOpen = false" class="flex items-center w-full px-4 py-3 text-sm font-medium hover:bg-zinc-50 rounded-lg transition-colors text-zinc-700">
+                <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center mr-3">
+                  <Smartphone class="w-4 h-4 text-green-600" />
+                </div>
                 {{ t('invoice_detail.share_whatsapp') }}
               </button>
-              <button @click="shareViaEmail" class="flex items-center w-full px-3 py-2 text-sm hover:bg-muted rounded-md tracking-tight">
-                <Mail class="w-4 h-4 mr-2 text-blue-600" />
+              <button @click="shareViaEmail(); isShareOpen = false" class="flex items-center w-full px-4 py-3 text-sm font-medium hover:bg-zinc-50 rounded-lg transition-colors text-zinc-700">
+                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3">
+                  <Mail class="w-4 h-4 text-blue-600" />
+                </div>
                 {{ t('invoice_detail.share_email') }}
               </button>
-              <button @click="copyShareLink" class="flex items-center w-full px-3 py-2 text-sm hover:bg-muted rounded-md tracking-tight border-t mt-1 pt-2">
-                <Copy class="w-4 h-4 mr-2 text-zinc-600" />
+              <div class="h-px bg-zinc-100 my-1"></div>
+              <button @click="copyShareLink(); isShareOpen = false" class="flex items-center w-full px-4 py-3 text-sm font-medium hover:bg-zinc-50 rounded-lg transition-colors text-zinc-700">
+                <div class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center mr-3">
+                  <Copy class="w-4 h-4 text-zinc-600" />
+                </div>
                 {{ t('invoice_detail.share_copy') }}
               </button>
             </div>
           </div>
+          
+          <!-- Invisible overlay to close dropdown -->
+          <div v-if="isShareOpen" class="fixed inset-0 z-40" @click="isShareOpen = false"></div>
         </div>
       </div>
     </div>
