@@ -206,7 +206,11 @@
         "ph_company": "Non renseigné",
         "lbl_address": "Adresse",
         "ph_address": "Non renseignée",
-        "btn_save": "Sauvegarder"
+        "lbl_currency": "Devise par défaut",
+        "btn_save": "Sauvegarder",
+        "btn_saving": "Enregistrement...",
+        "success_save": "Paramètres mis à jour !",
+        "err_save": "Erreur lors de la sauvegarde"
     },
     "subscriptions": {
         "title": "Abonnements Clients",
@@ -266,7 +270,7 @@
         "add_row": "Ajouter une ligne",
         "total": "Total",
         "cancel": "Annuler",
-        "save_and_send": "Créer et Envoyer",
+        "save_and_send": "Enregistrer la facture",
         "saving": "Enregistrement..."
     }
 }

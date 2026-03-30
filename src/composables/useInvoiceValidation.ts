@@ -1,4 +1,5 @@
 import { useForm, useFieldArray } from 'vee-validate'
+import { useAuthStore } from '@/stores/auth'
 import * as yup from 'yup'
 
 interface InvoiceFormValues {
@@ -32,7 +33,7 @@ export function useInvoiceValidation() {
         validationSchema: schema,
         initialValues: {
             clientId: '',
-            currency: 'EUR', // Default currency
+            currency: useAuthStore().userProfile?.currency || 'XAF', // Default currency from profile
             issueDate: new Date().toISOString().split('T')[0] as any,
             dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] as any,
             items: [

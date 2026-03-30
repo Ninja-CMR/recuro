@@ -1,16 +1,11 @@
 import type { Invoice, InvoiceItem } from '@/types'
+import { getCurrencySymbol } from '@/utils/currencies'
 
 export const generatePdf = (invoice: Invoice & { invoice_items?: InvoiceItem[], currency?: string }, profile?: any) => {
   const printWindow = window.open('', '_blank')
   if (!printWindow) return alert('Pop-up bloqué')
 
-  const currencyMap: Record<string, string> = {
-    'XAF': 'FCFA',
-    'EUR': '€',
-    'USD': '$',
-    'JPY': '¥'
-  }
-  const symbol = currencyMap[invoice.currency || 'XAF'] || 'FCFA'
+  const symbol = getCurrencySymbol(invoice.currency)
 
   const itemsHtml = invoice.invoice_items && invoice.invoice_items.length > 0 ? invoice.invoice_items.map(item => `
     <tr>

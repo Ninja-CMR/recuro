@@ -9,6 +9,7 @@ import Badge from '@/components/ui/Badge.vue'
 import { Plus, FileText } from 'lucide-vue-next'
 import type { Client } from '@/types'
 import { useI18n } from 'vue-i18n'
+import { getCurrencySymbol } from '@/utils/currencies'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -79,7 +80,7 @@ const getClientName = (clientId: string, clientObj?: any) => {
         
         <div class="flex items-center gap-4">
             <div class="text-right">
-                <p class="font-bold">{{ Math.round(invoice.total_amount) }} {{ invoice.currency === 'EUR' ? '€' : (invoice.currency === 'USD' ? '$' : 'FCFA') }}</p>
+                <p class="font-bold">{{ Math.round(invoice.total_amount) }} {{ getCurrencySymbol(invoice.currency) }}</p>
                 <Badge :variant="getStatusVariant(invoice.status)">{{ invoice.status }}</Badge>
             </div>
         </div>

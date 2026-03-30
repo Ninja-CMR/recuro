@@ -1,4 +1,5 @@
 import { useForm } from 'vee-validate'
+import { useAuthStore } from '@/stores/auth'
 import * as yup from 'yup'
 
 interface SubscriptionFormValues {
@@ -16,15 +17,15 @@ export function useSubscriptionValidation() {
         clientId: yup.string().required('Le client est requis'),
         name: yup.string().required(`Le nom de l'abonnement est requis`),
         amount: yup.number()
-                    .transform(value => (isNaN(value) || value === null || value === '') ? null : value)
-                    .nullable()
-                    .default(0)
-                    .min(0, 'Le montant minimum est 0')
-                    .required('Le montant est requis'),
+            .transform(value => (isNaN(value) || value === null || value === '') ? null : value)
+            .nullable()
+            .default(0)
+            .min(0, 'Le montant minimum est 0')
+            .required('Le montant est requis'),
         currency: yup.string().required('La devise est requise'),
         frequency: yup.string()
-                        .oneOf(['monthly', 'quarterly', 'yearly'], 'Fréquence invalide')
-                        .required('La fréquence est requise'),
+            .oneOf(['monthly', 'quarterly', 'yearly'], 'Fréquence invalide')
+            .required('La fréquence est requise'),
         startDate: yup.date().required('La date de début est requise'),
         description: yup.string().nullable()
     })
@@ -35,7 +36,7 @@ export function useSubscriptionValidation() {
             clientId: '',
             name: '',
             amount: 0,
-            currency: 'EUR',
+            currency: useAuthStore().userProfile?.currency || 'XAF',
             frequency: 'monthly',
             startDate: new Date().toISOString().split('T')[0],
             description: ''

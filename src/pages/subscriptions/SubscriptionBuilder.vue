@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
@@ -9,6 +9,7 @@ import { useSubscriptionStore } from '@/stores/subscription'
 import { useClientStore } from '@/stores/client'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
+import { currencies, convertAmount } from '@/utils/currencies'
 
 const router = useRouter()
 const route = useRoute()
@@ -97,6 +98,12 @@ const handleSave = handleSubmit(async (formValues) => {
     alert(t('sub_builder.err_save', { msg: error }))
   }
 })
+
+watch(currency, (newValue, oldValue) => {
+  if (newValue && oldValue && newValue !== oldValue) {
+    amount.value = Math.round(convertAmount(amount.value || 0, oldValue, newValue))
+  }
+})
 </script>
 
 <template>
@@ -143,9 +150,9 @@ const handleSave = handleSubmit(async (formValues) => {
             class="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             :class="{ 'border-destructive': errors.currency }"
           >
-            <option value="XAF">FCFA</option>
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
+            <option v-for="c in currencies" :key="c.value" :value="c.value">
+              {{ c.label }}
+            </option>
           </select>
           <p v-if="errors.currency" class="text-xs text-destructive mt-1">{{ errors.currency }}</p>
         </div>

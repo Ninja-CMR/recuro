@@ -6,6 +6,7 @@ import { generatePdf } from '@/services/pdfService'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import { FileDown, Printer } from 'lucide-vue-next'
+import { getCurrencySymbol } from '@/utils/currencies'
 
 const route = useRoute()
 const invoice = ref<any>(null)
@@ -57,15 +58,7 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const currentSymbol = computed(() => {
-  const currencies: Record<string, string> = {
-    'XAF': 'FCFA',
-    'EUR': '€',
-    'USD': '$',
-    'JPY': '¥'
-  }
-  return currencies[invoice.value?.currency] || 'FCFA'
-})
+const currentSymbol = computed(() => getCurrencySymbol(invoice.value?.currency))
 
 const handleDownloadPdf = () => {
   if (invoice.value) {

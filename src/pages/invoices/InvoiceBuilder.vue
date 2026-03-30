@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useClientStore } from '@/stores/client'
 import { useInvoiceStore } from '@/stores/invoice'
@@ -8,6 +8,7 @@ import Input from '@/components/ui/Input.vue'
 import Card from '@/components/ui/Card.vue'
 import { Trash2, Plus, FileDown } from 'lucide-vue-next'
 import { generatePdf } from '@/services/pdfService'
+import { currencies, getCurrencySymbol, convertAmount } from '@/utils/currencies'
 
 import { useInvoiceValidation } from '@/composables/useInvoiceValidation'
 
@@ -20,13 +21,6 @@ const currentInvoice = ref<any>(null)
 
 const invoiceId = computed(() => route.params.id as string | undefined)
 const isEditMode = computed(() => !!invoiceId.value)
-
-const currencies = [
-  { value: 'XAF', label: 'Franc CFA (FCFA)', symbol: 'FCFA' },
-  { value: 'EUR', label: 'Euro (€)', symbol: '€' },
-  { value: 'USD', label: 'Dollar US ($)', symbol: '$' },
-  { value: 'JPY', label: 'Yen Japonais (¥)', symbol: '¥' }
-]
 
 const {
   errors,
@@ -42,10 +36,7 @@ const {
   setValues
 } = useInvoiceValidation()
 
-const currentSymbol = computed(() => {
-  const cur = currencies.find(c => c.value === values.currency)
-  return cur ? cur.symbol : 'FCFA'
-})
+const currentSymbol = computed(() => getCurrencySymbol(values.currency))
 
 onMounted(async () => {
   await clientStore.fetchClients()
@@ -90,7 +81,7 @@ const handleSave = handleSubmit(async (formValues) => {
     issue_date: formValues.issueDate,
     due_date: formValues.dueDate,
     total_amount: totalAmount.value,
-    status: 'sent'
+    status: 'draft'
   }
 
   if (isEditMode.value && invoiceId.value) {
@@ -116,6 +107,14 @@ const handleSave = handleSubmit(async (formValues) => {
     router.push(`/invoices/${resultInvoice?.id || invoiceId.value}`)
   } else {
     alert('Erreur: ' + error)
+  }
+})
+
+watch(currency, (newValue, oldValue) => {
+  if (newValue && oldValue && newValue !== oldValue) {
+    items.value.forEach((item: any) => {
+      item.value.unit_price = Math.round(convertAmount(item.value.unit_price || 0, oldValue, newValue))
+    })
   }
 })
 

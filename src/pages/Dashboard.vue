@@ -41,7 +41,7 @@ const userName = computed(() => {
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('fr-FR', { 
     style: 'currency', 
-    currency: 'XAF', 
+    currency: authStore.userProfile?.currency || 'XAF', 
     minimumFractionDigits: 0,
     maximumFractionDigits: 0 
   }).format(value)

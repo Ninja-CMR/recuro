@@ -9,6 +9,7 @@ import { FileDown, Edit, ArrowLeft, Send, CheckCircle, ChevronDown, Smartphone, 
 import { generatePdf } from '@/services/pdfService'
 import { useSendInvoice } from '@/composables/useSendInvoice'
 import { useI18n } from 'vue-i18n'
+import { getCurrencySymbol } from '@/utils/currencies'
 
 const route = useRoute()
 const router = useRouter()
@@ -64,16 +65,7 @@ const getStatusLabel = (status: string) => {
   }
 }
 
-const currentSymbol = computed(() => {
-  const currencies = [
-    { value: 'XAF', symbol: 'FCFA' },
-    { value: 'EUR', symbol: '€' },
-    { value: 'USD', symbol: '$' },
-    { value: 'JPY', symbol: '¥' }
-  ]
-  const cur = currencies.find(c => c.value === invoice.value?.currency)
-  return cur ? cur.symbol : 'FCFA'
-})
+const currentSymbol = computed(() => getCurrencySymbol(invoice.value?.currency))
 
 const handleDownloadPdf = () => {
   if (invoice.value) {
@@ -91,13 +83,19 @@ const handleMarkAsPaid = async () => {
   }
 }
 
+const publicUrl = computed(() => {
+  if (!invoice.value) return ''
+  const baseUrl = window.location.origin
+  return `${baseUrl}/p/invoice/${invoice.value.id}`
+})
+
 const handleSendInvoice = async () => {
   if (!invoice.value) return
   
   sendingEmail.value = true
   try {
-    const result = await sendInvoice(invoice.value)
-    if (result.success && !result.manual) {
+    const result = await sendInvoice(invoice.value, publicUrl.value, 'whatsapp')
+    if (result.success) {
       alert(t('invoice_detail.success_send'))
     }
     // Update local status if it was sent
@@ -110,12 +108,6 @@ const handleSendInvoice = async () => {
     sendingEmail.value = false
   }
 }
-
-const publicUrl = computed(() => {
-  if (!invoice.value) return ''
-  const baseUrl = window.location.origin
-  return `${baseUrl}/p/invoice/${invoice.value.id}`
-})
 
 const shareViaWhatsApp = () => {
   const text = encodeURIComponent(t('invoice_detail.share_msg', { url: publicUrl.value }))
@@ -163,7 +155,7 @@ const copyShareLink = async () => {
             <ChevronDown class="w-4 h-4 ml-2" />
           </Button>
           
-          <div v-if="isShareOpen" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-zinc-100 p-2 z-50 animate-in fade-in zoom-in duration-200">
+          <div v-if="isShareOpen" class="absolute left-0 sm:left-auto sm:right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-zinc-100 p-2 z-50 animate-in fade-in zoom-in duration-200">
             <div class="flex flex-col gap-1">
               <button @click="shareViaWhatsApp(); isShareOpen = false" class="flex items-center w-full px-4 py-3 text-sm font-medium hover:bg-zinc-50 rounded-lg transition-colors text-zinc-700">
                 <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center mr-3">

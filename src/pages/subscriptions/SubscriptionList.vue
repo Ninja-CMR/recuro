@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import { Repeat, Plus, Edit, Trash2 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import { getCurrencySymbol } from '@/utils/currencies'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -75,7 +76,7 @@ const handleDelete = async (id: string) => {
                   <p class="text-sm font-medium">{{ formatDate(sub.start_date) }}</p>
                 </div>
                 <div class="text-right">
-                  <p class="font-bold text-xl text-primary">{{ Math.round(sub.amount) }} {{ sub.currency === 'XAF' ? 'FCFA' : sub.currency }}</p>
+                  <p class="font-bold text-xl text-primary">{{ Math.round(sub.amount) }} {{ getCurrencySymbol(sub.currency) }}</p>
                   <p class="text-xs text-muted-foreground">/ {{ sub.frequency === 'monthly' ? t('subscriptions.freq_monthly') : sub.frequency }}</p>
                 </div>
             </div>

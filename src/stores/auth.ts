@@ -73,6 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
             full_name: profile.value?.full_name || user.value.user_metadata?.full_name || 'Utilisateur',
             company_name: profile.value?.company_name,
             address: profile.value?.address,
+            currency: profile.value?.currency || 'XAF',
             subscription_tier: 'premium',
             initials: (profile.value?.full_name || user.value.user_metadata?.full_name || 'U')
                 .split(' ')
