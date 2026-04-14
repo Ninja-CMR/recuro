@@ -2,7 +2,7 @@ import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 
 export function useClientValidation() {
-    const phoneRegex = /^\+?[1-9]\d{1,14}$/
+    const phoneRegex = /^\+?[\s\-()]*(\d[\s\-()]*){7,15}$/
 
     const schema = yup.object({
         name: yup.string().required('Le nom est requis').min(2, 'Trop court'),
