@@ -33,7 +33,7 @@ const rawPhone = ref('')
 
 watch([phonePrefix, rawPhone], () => {
     if (rawPhone.value) {
-        const cleanPhone = rawPhone.value.replace(/\s+/g, '').replace(/^0+/, '')
+        const cleanPhone = rawPhone.value.replace(/\D/g, '').replace(/^0+/, '')
         phone.value = `${phonePrefix.value}${cleanPhone}`
     } else {
         phone.value = ''
