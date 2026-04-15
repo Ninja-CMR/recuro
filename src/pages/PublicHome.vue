@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '@/services/supabase'
 import Button from '@/components/ui/Button.vue'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -17,7 +18,9 @@ import {
   ChevronDown,
   Users,
   Briefcase,
-  Plus
+  Plus,
+  Send,
+  Loader2
 } from 'lucide-vue-next'
 
 import { useHeroAnimation } from '@/composables/useHeroAnimation'
@@ -27,6 +30,52 @@ gsap.registerPlugin(ScrollTrigger)
 
 const router = useRouter()
 const { initHeroAnimations } = useHeroAnimation()
+
+// --- Contact Form Logic ---
+const contactName = ref('')
+const contactEmail = ref('')
+const contactMessage = ref('')
+const isSubmitting = ref(false)
+const submitStatus = ref<'idle' | 'success' | 'error'>('idle')
+const errorMessage = ref('')
+
+const handleContactSubmit = async () => {
+  if (!contactName.value || !contactEmail.value || !contactMessage.value) {
+    submitStatus.value = 'error'
+    errorMessage.value = 'Veuillez remplir tous les champs.'
+    return
+  }
+
+  isSubmitting.value = true
+  submitStatus.value = 'idle'
+  
+  try {
+    const { data, error } = await supabase.functions.invoke('contact-form', {
+      body: { 
+        name: contactName.value, 
+        email: contactEmail.value, 
+        message: contactMessage.value 
+      }
+    })
+
+    if (error) throw error
+
+    submitStatus.value = 'success'
+    contactName.value = ''
+    contactEmail.value = ''
+    contactMessage.value = ''
+  } catch (err: any) {
+    console.error('Error submitting contact form:', err)
+    submitStatus.value = 'error'
+    errorMessage.value = err.message || 'Une erreur est survenue lors de l\'envoi du message.'
+  } finally {
+    isSubmitting.value = false
+    // Reset status after a few seconds
+    setTimeout(() => {
+      if (submitStatus.value === 'success') submitStatus.value = 'idle'
+    }, 5000)
+  }
+}
 
 onMounted(() => {
   // --- 1️⃣ Hero Animations ---
@@ -427,7 +476,7 @@ const faqs = [
                 <div>
                   <h4 class="font-bold text-zinc-800">{{ $t('home.contact_email_title') }}</h4>
                   <p class="text-zinc-500 text-sm mt-1">{{ $t('home.contact_email_desc') }}</p>
-                  <a href="mailto:hello@recuro.co" class="text-indigo-600 font-medium hover:underline block mt-1">hello@recuro.co</a>
+                  <a href="mailto:oliviermevaa0@gmail.com" class="text-indigo-600 font-medium hover:underline block mt-1">oliviermevaa0@gmail.com</a>
                 </div>
               </div>
               <div class="flex items-start gap-4">
@@ -440,7 +489,7 @@ const faqs = [
                 <div>
                   <h4 class="font-bold text-zinc-800">{{ $t('home.contact_office_title') }}</h4>
                   <p class="text-zinc-500 text-sm mt-1">{{ $t('home.contact_office_desc') }}</p>
-                  <address class="not-italic text-zinc-600 mt-1 font-medium">123 Avenue de l'Innovation<br/>75001 Paris, France</address>
+                  <address class="not-italic text-zinc-600 mt-1 font-medium">Derrière Socaver Ndogbong<br/>Douala, Cameroun</address>
                 </div>
               </div>
             </div>
@@ -448,20 +497,62 @@ const faqs = [
           <div class="bg-white p-8 md:p-10 rounded-3xl border border-zinc-100 shadow-xl relative">
             <div class="absolute -top-4 -right-4 w-24 h-24 bg-indigo-500/10 blur-2xl rounded-full"></div>
             <h3 class="text-2xl font-bold mb-6">{{ $t('home.contact_form_title') }}</h3>
-            <form @submit.prevent="" class="space-y-4">
+            <form @submit.prevent="handleContactSubmit" class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-zinc-700 mb-1">{{ $t('home.contact_form_name') }}</label>
-                <input type="text" class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" :placeholder="$t('home.contact_form_name')">
+                <input 
+                  v-model="contactName"
+                  type="text" 
+                  class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" 
+                  :placeholder="$t('home.contact_form_name')"
+                  required
+                >
               </div>
               <div>
                 <label class="block text-sm font-medium text-zinc-700 mb-1">{{ $t('home.contact_form_email') }}</label>
-                <input type="email" class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="hello@example.com">
+                <input 
+                  v-model="contactEmail"
+                  type="email" 
+                  class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" 
+                  placeholder="hello@example.com"
+                  required
+                >
               </div>
               <div>
                 <label class="block text-sm font-medium text-zinc-700 mb-1">{{ $t('home.contact_form_message') }}</label>
-                <textarea rows="4" class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none" :placeholder="$t('home.contact_form_message')"></textarea>
+                <textarea 
+                  v-model="contactMessage"
+                  rows="4" 
+                  class="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none" 
+                  :placeholder="$t('home.contact_form_message')"
+                  required
+                ></textarea>
               </div>
-              <Button type="button" class="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-medium">{{ $t('home.contact_form_submit') }}</Button>
+              
+              <div v-if="submitStatus === 'success'" class="p-3 bg-emerald-50 text-emerald-700 rounded-lg text-sm flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
+                <CheckCircle class="w-4 h-4" />
+                Message envoyé avec succès !
+              </div>
+              
+              <div v-if="submitStatus === 'error'" class="p-3 bg-red-50 text-red-700 rounded-lg text-sm flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
+                <AlertCircle class="w-4 h-4" />
+                {{ errorMessage }}
+              </div>
+
+              <Button 
+                type="submit" 
+                class="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-medium flex items-center justify-center gap-2"
+                :disabled="isSubmitting"
+              >
+                <template v-if="isSubmitting">
+                  <Loader2 class="w-4 h-4 animate-spin" />
+                  Envoi en cours...
+                </template>
+                <template v-else>
+                  <Send class="w-4 h-4" />
+                  {{ $t('home.contact_form_submit') }}
+                </template>
+              </Button>
             </form>
           </div>
         </div>
@@ -505,7 +596,7 @@ const faqs = [
             <ul class="space-y-4 text-sm text-zinc-500">
               <li class="flex items-start gap-3">
                 <span class="font-medium text-zinc-700">Email:</span>
-                <a href="mailto:hello@recuro.co" class="hover:text-indigo-600 transition-colors">hello@recuro.co</a>
+                <a href="mailto:holiviermevaa@gmail.com" class="hover:text-indigo-600 transition-colors">oliviermevaa0@gmail.com</a>
               </li>
               <li class="flex items-start gap-3">
                 <span class="font-medium text-zinc-700">Bureaux:</span>
