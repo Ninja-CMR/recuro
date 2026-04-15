@@ -50,7 +50,7 @@ const handleContactSubmit = async () => {
   submitStatus.value = 'idle'
   
   try {
-    const { data, error } = await supabase.functions.invoke('contact-form', {
+    const { error } = await supabase.functions.invoke('contact-form', {
       body: { 
         name: contactName.value, 
         email: contactEmail.value, 
